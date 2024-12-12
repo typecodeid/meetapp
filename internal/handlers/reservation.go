@@ -118,6 +118,14 @@ var data = []Reservation{
 	},
 }
 
+// GetAll godoc
+// @Summary Get all reservations
+// @Description Retrieve all reservations in the system
+// @Tags reservations
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /reservations [get]
 func GetAll(c echo.Context) error {
 	type Response struct {
 		Message string        `json:"message"`
