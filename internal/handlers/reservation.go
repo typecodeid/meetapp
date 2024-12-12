@@ -128,6 +128,22 @@ func GetAll(c echo.Context) error {
 		Message: "Success",
 		Data:    data,
 	}
-
 	return c.JSON(http.StatusOK, response)
+}
+
+func GetByID(c echo.Context) error {
+	id := c.Param("id")
+	for _, reservation := range data {
+		if reservation.ID == id {
+			return c.JSON(http.StatusOK, map[string]interface{}{
+				"message": "Success",
+				"data":    reservation,
+			})
+		}
+	}
+
+	// Jika data tidak ditemukan
+	return c.JSON(http.StatusNotFound, map[string]string{
+		"message": "Reservation not found",
+	})
 }

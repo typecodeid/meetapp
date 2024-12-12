@@ -13,6 +13,7 @@ func main() {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 
-	route.GET("/reservation", reservation.GetAll)
+	route.GET("/reservations", reservation.GetAll)
+	route.GET("/reservations/:id", reservation.GetByID)
 	route.Logger.Fatal(route.Start(":7000"))
 }
