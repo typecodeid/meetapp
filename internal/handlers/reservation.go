@@ -124,7 +124,7 @@ var data = []Reservation{
 // @Tags reservations
 // @Accept json
 // @Produce json
-// @Success 200 {object} map[string]interface{}
+// @Success 200 {array} Reservation
 // @Router /reservations [get]
 func GetAll(c echo.Context) error {
 	type Response struct {
@@ -139,6 +139,16 @@ func GetAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
+// GetByID godoc
+// @Summary Get a reservation by ID
+// @Description Retrieve a reservation by its ID
+// @Tags reservations
+// @Accept json
+// @Produce json
+// @Param id path string true "Reservation ID"
+// @Success 200 {object} Reservation
+// @Failure 404 {object} map[string]string
+// @Router /reservations/{id} [get]
 func GetByID(c echo.Context) error {
 	id := c.Param("id")
 	for _, reservation := range data {

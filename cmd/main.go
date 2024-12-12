@@ -4,7 +4,7 @@ import (
 	reservation "meetapp/internal/handlers"
 	"net/http"
 
-	_ "meetapp/docs"
+	_ "meetapp/docs" // Pastikan impor ini ada
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger" // echo-swagger middleware
@@ -13,28 +13,21 @@ import (
 
 // @title Swagger MeetApp By Sinau Koding API
 // @version 1.0
-// @description This is docomentation api from swagger
+// @description This is documentation API from Swagger
 // @termsOfService http://swagger.io/terms/
-
-// GetAll godoc
-// @Summary Get all reservations
-// @Description Retrieve all reservations in the system
-// @Tags reservations
-// @Accept json
-// @Produce json
-// @Success 200 {object} map[string]interface{}
-// @Router /reservations [get]
+// @host localhost:7000
+// @BasePath /
 
 func main() {
-	swag.ReadDoc()
 	route := echo.New()
+	swag.ReadDoc()
 
 	route.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
-	route.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	route.GET("/reservations", reservation.GetAll)
 	route.GET("/reservations/:id", reservation.GetByID)
+	route.GET("/swagger/*", echoSwagger.WrapHandler)
 	route.Logger.Fatal(route.Start(":7000"))
 }

@@ -1,8 +1,125 @@
+basePath: /
+definitions:
+  reservation.Reservation:
+    properties:
+      company:
+        type: string
+      created_at:
+        type: string
+      end_time:
+        type: string
+      final_price:
+        type: integer
+      id:
+        type: string
+      name:
+        type: string
+      participants:
+        type: integer
+      phone:
+        type: string
+      room:
+        $ref: '#/definitions/reservation.Room'
+      room_price:
+        type: integer
+      snack:
+        $ref: '#/definitions/reservation.Snack'
+      start_time:
+        type: string
+      status:
+        type: string
+      total_snack:
+        type: integer
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/reservation.User'
+    type: object
+  reservation.Room:
+    properties:
+      capacity:
+        type: integer
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      type:
+        type: string
+    type: object
+  reservation.Snack:
+    properties:
+      category:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      package:
+        type: string
+      price:
+        type: string
+    type: object
+  reservation.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:7000
 info:
   contact: {}
-  description: This is docomentation api from swagger
+  description: This is documentation API from Swagger
   termsOfService: http://swagger.io/terms/
   title: Swagger MeetApp By Sinau Koding API
   version: "1.0"
-paths: {}
+paths:
+  /reservations:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all reservations in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/reservation.Reservation'
+            type: array
+      summary: Get all reservations
+      tags:
+      - reservations
+  /reservations/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a reservation by its ID
+      parameters:
+      - description: Reservation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/reservation.Reservation'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a reservation by ID
+      tags:
+      - reservations
 swagger: "2.0"
