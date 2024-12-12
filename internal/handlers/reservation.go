@@ -118,6 +118,14 @@ var data = []Reservation{
 	},
 }
 
+// GetAll godoc
+// @Summary Get all reservations
+// @Description Retrieve all reservations in the system
+// @Tags reservations
+// @Accept json
+// @Produce json
+// @Success 200 {array} Reservation
+// @Router /reservations [get]
 func GetAll(c echo.Context) error {
 	type Response struct {
 		Message string        `json:"message"`
@@ -128,6 +136,32 @@ func GetAll(c echo.Context) error {
 		Message: "Success",
 		Data:    data,
 	}
-
 	return c.JSON(http.StatusOK, response)
+}
+
+// GetByID godoc
+// @Summary Get a reservation by ID
+// @Description Retrieve a reservation by its ID
+// @Tags reservations
+// @Accept json
+// @Produce json
+// @Param id path string true "Reservation ID"
+// @Success 200 {object} Reservation
+// @Failure 404 {object} map[string]string
+// @Router /reservations/{id} [get]
+func GetByID(c echo.Context) error {
+	id := c.Param("id")
+	for _, reservation := range data {
+		if reservation.ID == id {
+			return c.JSON(http.StatusOK, map[string]interface{}{
+				"message": "Success",
+				"data":    reservation,
+			})
+		}
+	}
+
+	// Jika data tidak ditemukan
+	return c.JSON(http.StatusNotFound, map[string]string{
+		"message": "Reservation not found",
+	})
 }
