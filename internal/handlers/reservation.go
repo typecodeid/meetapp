@@ -165,3 +165,25 @@ func GetByID(c echo.Context) error {
 		"message": "Reservation not found",
 	})
 }
+
+// PostReservation godoc
+// @Summary Create a new reservation
+// @Description Create a new reservation
+// @Tags reservations
+// @Accept json
+// @Produce json
+// @Param reservation body Reservation true "Reservation details"
+// @Success 200 {object} map[string]string
+// @Router /reservations [post]
+func PostReservation(c echo.Context) error {
+	var reservation Reservation
+	if err := c.Bind(&reservation); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Invalid request body",
+		})
+	}
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "Success",
+		"data":    reservation,
+	})
+}
