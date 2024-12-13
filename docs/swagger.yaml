@@ -95,6 +95,29 @@ paths:
       summary: Get all reservations
       tags:
       - reservations
+    post:
+      consumes:
+      - application/json
+      description: Create a new reservation
+      parameters:
+      - description: Reservation details
+        in: body
+        name: reservation
+        required: true
+        schema:
+          $ref: '#/definitions/reservation.Reservation'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new reservation
+      tags:
+      - reservations
   /reservations/{id}:
     get:
       consumes:

@@ -28,6 +28,7 @@ func main() {
 
 	route.GET("/reservations", reservation.GetAll)
 	route.GET("/reservations/:id", reservation.GetByID)
+	route.POST("/reservations", reservation.PostReservation)
 	route.GET("/swagger/*", echoSwagger.WrapHandler)
 	route.Logger.Fatal(route.Start(":7000"))
 }
