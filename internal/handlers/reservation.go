@@ -268,6 +268,21 @@ func GetByID(c echo.Context) error {
 	})
 }
 
+// PutReservation godoc
+// @Summary Edit a reservation
+// @Description Edit a reservation
+// @Tags reservations
+// @Accept json
+// @Produce json
+// @Param id path string true "Reservation ID"
+// @Success 200 {object} map[string]string
+// @Router /reservations/{id} [put]
+func PutReservation(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "Edit data",
+	})
+}
+
 // PostReservation godoc
 // @Summary Create a new reservation
 // @Description Create a new reservation
