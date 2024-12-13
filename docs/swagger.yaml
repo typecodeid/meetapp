@@ -162,4 +162,26 @@ paths:
       summary: Get a reservation by ID
       tags:
       - reservations
+    put:
+      consumes:
+      - application/json
+      description: Edit a reservation
+      parameters:
+      - description: Reservation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Edit a reservation
+      tags:
+      - reservations
 swagger: "2.0"
