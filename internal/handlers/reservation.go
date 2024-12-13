@@ -2,6 +2,7 @@ package reservation
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -54,7 +55,7 @@ var data = []Reservation{
 		EndTime:      "2022-01-01T11:00:00Z",
 		CreatedAt:    "2022-01-01T10:00:00Z",
 		UpdatedAt:    "2022-01-01T10:00:00Z",
-		Status:       "Booked",
+		Status:       "booked",
 		Participants: 7,
 		Name:         "Monkey D Luffy",
 		Total_Snack:  7,
@@ -69,8 +70,8 @@ var data = []Reservation{
 		},
 		Room: Room{
 			ID:       "1",
-			Name:     "Room 1",
-			Type:     "Meeting Room",
+			Name:     "Ruang 1",
+			Type:     "small",
 			Capacity: 10,
 			Price:    100,
 		},
@@ -88,7 +89,7 @@ var data = []Reservation{
 		EndTime:      "2022-01-01T11:00:00Z",
 		CreatedAt:    "2022-01-01T10:00:00Z",
 		UpdatedAt:    "2022-01-01T10:00:00Z",
-		Status:       "Paid",
+		Status:       "paid",
 		Participants: 10,
 		Name:         "Sun Goku",
 		Total_Snack:  7,
@@ -102,9 +103,43 @@ var data = []Reservation{
 			Email:    "5o0rI@example.com",
 		},
 		Room: Room{
+			ID:       "2",
+			Name:     "Ruang 2",
+			Type:     "medium",
+			Capacity: 10,
+			Price:    100,
+		},
+		Snack: Snack{
 			ID:       "1",
-			Name:     "Room 2",
-			Type:     "Meeting Room",
+			Name:     "Snack 1",
+			Category: "Food",
+			Package:  "Small",
+			Price:    "10",
+		},
+	},
+	{
+		ID:           "3",
+		StartTime:    "2022-01-01T10:00:00Z",
+		EndTime:      "2022-01-01T11:00:00Z",
+		CreatedAt:    "2022-01-01T10:00:00Z",
+		UpdatedAt:    "2022-01-01T10:00:00Z",
+		Status:       "unpaid",
+		Participants: 10,
+		Name:         "Sun Goku",
+		Total_Snack:  7,
+		Company:      "Dragon Ball",
+		Phone:        "1234567890",
+		Room_price:   800000,
+		Final_price:  900000,
+		User: User{
+			ID:       "1",
+			Username: "John Doe",
+			Email:    "5o0rI@example.com",
+		},
+		Room: Room{
+			ID:       "3",
+			Name:     "Room 3",
+			Type:     "large",
 			Capacity: 10,
 			Price:    100,
 		},
@@ -124,6 +159,10 @@ var data = []Reservation{
 // @Tags reservations
 // @Accept json
 // @Produce json
+// @Param status query string false "Filter by status"
+// @Param room_type query string false "Filter by room type"
+// @Param start_date query string false "Filter by start date (YYYY-MM-DD)"
+// @Param end_date query string false "Filter by end date (YYYY-MM-DD)"
 // @Success 200 {array} Reservation
 // @Router /reservations [get]
 func GetAll(c echo.Context) error {
@@ -132,9 +171,72 @@ func GetAll(c echo.Context) error {
 		Data    []Reservation `json:"data"`
 	}
 
+	status := c.QueryParam("status")
+	roomType := c.QueryParam("room_type")
+	startDateStr := c.QueryParam("start_date") // rename dari starDate ke startDateStr
+	endDateStr := c.QueryParam("end_date")     // rename dari endDate ke endDateStr
+
+	var startDate, endDate time.Time
+	var err error
+
+	// Parse start_date jika ada
+	if startDateStr != "" {
+		startDate, err = time.Parse("2006-01-02", startDateStr)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]string{
+				"message": "Invalid start date format",
+			})
+		}
+	}
+
+	// Parse end_date jika ada
+	if endDateStr != "" {
+		endDate, err = time.Parse("2006-01-02", endDateStr)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]string{
+				"message": "Invalid end date format",
+			})
+		}
+	}
+
+	filteredData := []Reservation{}
+
+	for _, r := range data {
+		// Filter status
+		if status != "" && r.Status != status {
+			continue
+		}
+
+		// Filter room_type
+		if roomType != "" && r.Room.Type != roomType {
+			continue
+		}
+
+		// Parsing StartTime & EndTime dari reservation
+		reservationStart, errStart := time.Parse(time.RFC3339, r.StartTime)
+		reservationEnd, errEnd := time.Parse(time.RFC3339, r.EndTime)
+		if errStart != nil || errEnd != nil {
+			// Jika data tidak valid, skip saja
+			continue
+		}
+
+		// Filter berdasarkan start_date
+		if !startDate.IsZero() && reservationStart.Before(startDate) {
+			continue
+		}
+
+		// Filter berdasarkan end_date
+		if !endDate.IsZero() && reservationEnd.After(endDate) {
+			continue
+		}
+
+		// Jika semua filter lolos, masukkan ke filteredData
+		filteredData = append(filteredData, r)
+	}
+
 	response := Response{
 		Message: "Success",
-		Data:    data,
+		Data:    filteredData, // Pastikan menggunakan filteredData, bukan data
 	}
 	return c.JSON(http.StatusOK, response)
 }
