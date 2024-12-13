@@ -123,7 +123,7 @@ var data = []Reservation{
 		EndTime:      "2022-01-01T11:00:00Z",
 		CreatedAt:    "2022-01-01T10:00:00Z",
 		UpdatedAt:    "2022-01-01T10:00:00Z",
-		Status:       "unpaid",
+		Status:       "cancel",
 		Participants: 10,
 		Name:         "Sun Goku",
 		Total_Snack:  7,
