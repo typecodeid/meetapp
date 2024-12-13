@@ -83,6 +83,23 @@ paths:
       consumes:
       - application/json
       description: Retrieve all reservations in the system
+      parameters:
+      - description: Filter by status
+        in: query
+        name: status
+        type: string
+      - description: Filter by room type
+        in: query
+        name: room_type
+        type: string
+      - description: Filter by start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: Filter by end date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
       produces:
       - application/json
       responses:
