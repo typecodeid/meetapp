@@ -35,6 +35,15 @@ func AuthLogin(c echo.Context) error {
 	})
 }
 
+// AuthRegister godoc
+// @Summary Register a new user
+// @Description Register a new user
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param user body UserInput true "User details"
+// @Success 200 {object} map[string]interface{}
+// @Router /register [post]
 func AuthRegister(c echo.Context) error {
 	var input UserInput
 
