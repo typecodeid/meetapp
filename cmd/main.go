@@ -1,7 +1,9 @@
 package main
 
 import (
-	reservation "meetapp/internal/handlers"
+	"log"
+	routeApp "meetapp/internal/handlers"
+	utils "meetapp/pkg/database"
 	"net/http"
 
 	_ "meetapp/docs" // Pastikan impor ini ada
@@ -19,6 +21,12 @@ import (
 // @BasePath /
 
 func main() {
+	db, err := utils.ConnectDB("saptoprasojo", "postgres", "meetappdb")
+	if err != nil {
+		log.Fatal("Failed to connect to database", err)
+	}
+	defer db.Close()
+
 	route := echo.New()
 	swag.ReadDoc()
 
@@ -26,10 +34,12 @@ func main() {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 
-	route.GET("/reservations", reservation.GetAll)
-	route.GET("/reservations/:id", reservation.GetByID)
-	route.PUT("/reservations/:id", reservation.PutReservation)
-	route.POST("/reservations", reservation.PostReservation)
+	route.GET("/reservations", routeApp.GetAll)
+	route.GET("/reservations/:id", routeApp.GetByID)
+	route.PUT("/reservations/:id", routeApp.PutReservation)
+	route.POST("/reservations", routeApp.PostReservation)
+
+	route.POST("/users", routeApp.PostUser)
 	route.GET("/swagger/*", echoSwagger.WrapHandler)
 	route.Logger.Fatal(route.Start(":7000"))
 }
