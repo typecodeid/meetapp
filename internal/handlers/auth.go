@@ -1,17 +1,17 @@
 package handlers
 
 import (
+	"database/sql"
 	utils "meetapp/pkg/database"
 	"net/http"
 	"strings"
+	"time"
 
-	// "github.com/go-playground/validator/v10"
-	// "github.com/google/uuid"
 	"github.com/go-playground/validator"
+	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
-	// "golang.org/x/crypto/bcrypt"
 )
 
 type UserInput struct {
@@ -27,12 +27,83 @@ type UserResponse struct {
 	Email    string `json:"email"`
 }
 
+type UserLogin struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=6"`
+}
+
+var jwtSecret = []byte("ScreetKey007")
+
 var validate = validator.New()
 
+// AuthLogin godoc
+// @Summary Login user
+// @Description Login user menggunakan email dan password, email: mail@mail.com, password: password123
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param user body UserLogin true "User login details"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]string "Invalid request payload"
+// @Failure 401 {object} map[string]string "Invalid credentials"
+// @Router /login [post]
 func AuthLogin(c echo.Context) error {
+	var input UserLogin
+
+	// Bind input JSON ke struct UserLogin
+	if err := c.Bind(&input); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request payload"})
+	}
+
+	// Query untuk mencari user berdasarkan email
+	query := "SELECT id, email, password, username FROM users WHERE email = $1 AND status = true"
+	var user User
+	err := utils.DB.QueryRow(query, input.Email).Scan(&user.ID, &user.Email, &user.Password, &user.Username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Invalid credentials"})
+		}
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to retrieve user"})
+	}
+
+	// Verifikasi password dengan bcrypt
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Invalid credentials"})
+	}
+
+	// Generate JWT token jika login berhasil
+	token, err := generateJWT(user.Email)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to generate token"})
+	}
+
+	// Kirim response dengan token
 	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "Success login",
+		"message": "Login successful",
+		"token":   token,
 	})
+}
+
+// generateJWT membuat token JWT untuk pengguna
+func generateJWT(email string) (string, error) {
+	// Tentukan klaim (payload)
+	claims := jwt.MapClaims{
+		"sub":   email,                                 // Menggunakan email sebagai subject
+		"email": email,                                 // Simpan email di dalam klaim
+		"exp":   time.Now().Add(time.Hour * 24).Unix(), // Token kadaluarsa dalam 24 jam
+	}
+
+	// Membuat token JWT dengan menggunakan secret key
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Tandatangani token dengan secret key
+	tokenString, err := token.SignedString(jwtSecret)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
 
 // AuthRegister godoc

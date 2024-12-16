@@ -97,6 +97,17 @@ definitions:
     - password
     - username
     type: object
+  handlers.UserLogin:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
 host: localhost:7000
 info:
   contact: {}
@@ -105,6 +116,42 @@ info:
   title: Swagger MeetApp By Sinau Koding API
   version: "1.0"
 paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: 'Login user menggunakan email dan password, email: mail@mail.com,
+        password: password123'
+      parameters:
+      - description: User login details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request payload
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Invalid credentials
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login user
+      tags:
+      - auth
   /register:
     post:
       consumes:
@@ -235,6 +282,21 @@ paths:
       tags:
       - reservations
   /users:
+    get:
+      consumes:
+      - application/json
+      description: Get all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all users
+      tags:
+      - users
     post:
       consumes:
       - application/json
