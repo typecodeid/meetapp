@@ -61,7 +61,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/reservation.Reservation"
+                                "$ref": "#/definitions/handlers.Reservation"
                             }
                         }
                     }
@@ -86,7 +86,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/reservation.Reservation"
+                            "$ref": "#/definitions/handlers.Reservation"
                         }
                     }
                 ],
@@ -129,7 +129,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/reservation.Reservation"
+                            "$ref": "#/definitions/handlers.Reservation"
                         }
                     },
                     "404": {
@@ -176,10 +176,45 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users": {
+            "post": {
+                "description": "Create a new user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Create a new user",
+                "parameters": [
+                    {
+                        "description": "User details",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
-        "reservation.Reservation": {
+        "handlers.Reservation": {
             "type": "object",
             "properties": {
                 "company": {
@@ -207,13 +242,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "room": {
-                    "$ref": "#/definitions/reservation.Room"
+                    "$ref": "#/definitions/handlers.Room"
                 },
                 "room_price": {
                     "type": "integer"
                 },
                 "snack": {
-                    "$ref": "#/definitions/reservation.Snack"
+                    "$ref": "#/definitions/handlers.Snack"
                 },
                 "start_time": {
                     "type": "string"
@@ -228,11 +263,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/reservation.User"
+                    "$ref": "#/definitions/handlers.User"
                 }
             }
         },
-        "reservation.Room": {
+        "handlers.Room": {
             "type": "object",
             "properties": {
                 "capacity": {
@@ -252,7 +287,7 @@ const docTemplate = `{
                 }
             }
         },
-        "reservation.Snack": {
+        "handlers.Snack": {
             "type": "object",
             "properties": {
                 "category": {
@@ -272,7 +307,7 @@ const docTemplate = `{
                 }
             }
         },
-        "reservation.User": {
+        "handlers.User": {
             "type": "object",
             "properties": {
                 "email": {

@@ -1,4 +1,4 @@
-package reservation
+package handlers
 
 import (
 	"net/http"
