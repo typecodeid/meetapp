@@ -21,6 +21,14 @@ func PostUser(c echo.Context) error {
 	})
 }
 
+// GetUser godoc
+// @Summary Get all users
+// @Description Get all users
+// @Tags users
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /users [get]
 func GetUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "Get User Success",
