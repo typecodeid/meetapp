@@ -11,6 +11,12 @@ var rooms = make(map[string]Room)
 var reservation = make(map[string]Reservation)
 var snacks = make(map[string]Snack)
 
+var Users = []User{
+	{ID: 1, Username: "John Doe", Gmail: "Johndoe@gmail.com", image: "image", password: "123", role: "admin", status: "status", language: "bahasa"},
+	{ID: 2, Username: "Sun Goku", Gmail: "Sungoku@gmail.com", image: "image", password: "456", role: "staff", status: "status", language: "bahasa"},
+	{ID: 3, Username: "Sun Goku", Gmail: "Sungoku2@gmail.com", image: "image", password: "789", role: "manager", status: "status", language: "bahasa"},
+}
+
 // PostUser godoc
 // @Summary Create a new user
 // @Description Create a new user
@@ -57,6 +63,12 @@ func GetRoom(c echo.Context) error {
 	})
 }
 
+var Room = []Room{
+	{ID: 1, Name: "Nilna", Type: "small", Capacity: 10, Price: 100},
+	{ID: 2, Name: "Alminah", Type: "medium", Capacity: 10, Price: 100},
+	{ID: 1, Name: "Nilna", Type: "large", Capacity: 10, Price: 100},
+}
+
 func CreateRoom(c echo.Context) error {
 	var room Room
 	if err := c.Bind(&room); err != nil {
@@ -82,6 +94,12 @@ func CreateReservationForRoom(c echo.Context) error {
 // handler untuk snack
 func GetSnack(c echo.Context) error {
 	return c.JSON(http.StatusOK, snacks)
+}
+
+var Snack = []Snack{
+	{ID: 1, Name: "Snack 1", Category: "Food", Package: "Small", Price: "10"},
+	{ID: 2, Name: "Snack 1", Category: "Food", Package: "Small", Price: "10"},
+	{ID: 2, Name: "Snack 1", Category: "Food", Package: "Small", Price: "10"},
 }
 
 func CreateSnack(c echo.Context) error {
