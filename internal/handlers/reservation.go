@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type Room struct {
+type Rooms struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Type     string `json:"type"`
@@ -26,7 +26,7 @@ type User struct {
 	Language string `json:"language"`
 }
 
-type Snack struct {
+type Snacks struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Category string `json:"category"`
@@ -49,8 +49,8 @@ type Reservation struct {
 	Room_price   int    `json:"room_price"`
 	Final_price  int    `json:"final_price"`
 	User         User   `json:"user"`
-	Room         Room   `json:"room"`
-	Snack        Snack  `json:"snack"`
+	Room         Rooms  `json:"room"`
+	Snack        Snacks `json:"snack"`
 }
 
 var data = []Reservation{
@@ -73,14 +73,14 @@ var data = []Reservation{
 			Username: "John Doe",
 			Email:    "5o0rI@example.com",
 		},
-		Room: Room{
+		Room: Rooms{
 			ID:       "1",
 			Name:     "Ruang 1",
 			Type:     "small",
 			Capacity: 10,
 			Price:    100,
 		},
-		Snack: Snack{
+		Snack: Snacks{
 			ID:       "1",
 			Name:     "Snack 1",
 			Category: "Food",
@@ -107,14 +107,14 @@ var data = []Reservation{
 			Username: "John Doe",
 			Email:    "5o0rI@example.com",
 		},
-		Room: Room{
+		Room: Rooms{
 			ID:       "2",
 			Name:     "Ruang 2",
 			Type:     "medium",
 			Capacity: 10,
 			Price:    100,
 		},
-		Snack: Snack{
+		Snack: Snacks{
 			ID:       "1",
 			Name:     "Snack 1",
 			Category: "Food",
@@ -141,14 +141,14 @@ var data = []Reservation{
 			Username: "John Doe",
 			Email:    "5o0rI@example.com",
 		},
-		Room: Room{
+		Room: Rooms{
 			ID:       "3",
 			Name:     "Room 3",
 			Type:     "large",
 			Capacity: 10,
 			Price:    100,
 		},
-		Snack: Snack{
+		Snack: Snacks{
 			ID:       "1",
 			Name:     "Snack 1",
 			Category: "Food",

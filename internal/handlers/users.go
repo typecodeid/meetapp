@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"reservation/internal\\handlers\"
 
 	"github.com/labstack/echo/v4"
 )
@@ -12,9 +13,9 @@ var reservation = make(map[string]Reservation)
 var snacks = make(map[string]Snack)
 
 var Users = []User{
-	{ID: 1, Username: "John Doe", Gmail: "Johndoe@gmail.com", image: "image", password: "123", role: "admin", status: "status", language: "bahasa"},
-	{ID: 2, Username: "Sun Goku", Gmail: "Sungoku@gmail.com", image: "image", password: "456", role: "staff", status: "status", language: "bahasa"},
-	{ID: 3, Username: "Sun Goku", Gmail: "Sungoku2@gmail.com", image: "image", password: "789", role: "manager", status: "status", language: "bahasa"},
+	{ID: 1, Username: "John Doe", Email: "Johndoe@gmail.com", image: "image", password: 123, role: "admin", status: "status", language: "bahasa"},
+	{ID: 2, Username: "Sun Goku", Email: "Sungoku@gmail.com", image: "image", password: 456, role: "staff", status: "status", language: "bahasa"},
+	{ID: 3, Username: "Sun Goku", Email: "Sungoku2@gmail.com", image: "image", password: 789, role: "manager", status: "status", language: "bahasa"},
 }
 
 // PostUser godoc
