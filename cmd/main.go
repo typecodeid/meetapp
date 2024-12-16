@@ -41,7 +41,7 @@ func main() {
 	route.POST("/reservations", routeApp.PostReservation)
 
 	// user
-	route.GET("/users", routeApp.PostUser)
+	route.GET("/users", routeApp.GetUser)
 
 	//auth
 	route.POST("/login", routeApp.AuthLogin)

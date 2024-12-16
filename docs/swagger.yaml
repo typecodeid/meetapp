@@ -80,6 +80,23 @@ definitions:
       username:
         type: string
     type: object
+  handlers.UserInput:
+    properties:
+      confirm_password:
+        type: string
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      username:
+        type: string
+    required:
+    - confirm_password
+    - email
+    - password
+    - username
+    type: object
 host: localhost:7000
 info:
   contact: {}
@@ -88,6 +105,29 @@ info:
   title: Swagger MeetApp By Sinau Koding API
   version: "1.0"
 paths:
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: User details
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Register a new user
+      tags:
+      - auth
   /reservations:
     get:
       consumes:
