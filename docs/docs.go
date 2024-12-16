@@ -316,6 +316,21 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "image_id": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "boolean"
+                },
                 "username": {
                     "type": "string"
                 }
