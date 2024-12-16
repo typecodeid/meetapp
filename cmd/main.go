@@ -21,7 +21,13 @@ import (
 // @BasePath /
 
 func main() {
-	db, err := utils.ConnectDB("saptoprasojo", "postgres", "meetappdb")
+	user := "postgres"
+	password := "PmdkTSGxDXYqVFKfwwmkOYgMftbwwdXs"
+	dbname := "railway"
+	host := "junction.proxy.rlwy.net"
+	port := "35001"
+
+	db, err := utils.ConnectDB(user, password, dbname, host, port)
 	if err != nil {
 		log.Fatal("Failed to connect to database", err)
 	}

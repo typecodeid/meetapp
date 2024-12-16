@@ -19,6 +19,11 @@ type User struct {
 	ID       string `json:"id"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
+	ImageID  string `json:"image_id"`
+	Password string `json:"password"`
+	Role     string `json:"role"`
+	Status   bool   `json:"status"`
+	Language string `json:"language"`
 }
 
 type Snack struct {
