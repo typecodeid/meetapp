@@ -41,7 +41,15 @@ func main() {
 	route.POST("/reservations", routeApp.PostReservation)
 
 	// user
-	route.POST("/users", routeApp.PostUser)
+	route.POST("/user", routeApp.PostUser)
+	route.POST("/user", routeApp.CreateUser)
+	route.GET("/user", routeApp.GetUser)
+	route.GET("/user/:id", routeApp.GetUserByID)
+	route.GET("/room", routeApp.GetRoom)
+	route.POST("/room", routeApp.CreateRoom)
+	route.POST("/room/:id/reservation", routeApp.CreateReservationForRoom)
+	route.GET("/snack", routeApp.GetSnack)
+	route.POST("/snack", routeApp.CreateSnack)
 
 	//auth
 	route.POST("/login", routeApp.AuthLogin)
