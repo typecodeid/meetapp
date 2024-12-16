@@ -34,12 +34,19 @@ func main() {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 
+	// reservation
 	route.GET("/reservations", routeApp.GetAll)
 	route.GET("/reservations/:id", routeApp.GetByID)
 	route.PUT("/reservations/:id", routeApp.PutReservation)
 	route.POST("/reservations", routeApp.PostReservation)
 
+	// user
 	route.POST("/users", routeApp.PostUser)
+
+	//auth
+	route.POST("/login", routeApp.AuthLogin)
+	route.POST("/register", routeApp.AuthRegister)
+
 	route.GET("/swagger/*", echoSwagger.WrapHandler)
 	route.Logger.Fatal(route.Start(":7000"))
 }
