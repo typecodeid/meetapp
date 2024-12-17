@@ -1,113 +1,91 @@
 package handlers
 
 import (
+	utils "meetapp/pkg/database"
 	"net/http"
-	"reservation/internal\\handlers\"
 
 	"github.com/labstack/echo/v4"
 )
 
-var users = make(map[string]User)
-var rooms = make(map[string]Room)
-var reservation = make(map[string]Reservation)
-var snacks = make(map[string]Snack)
-
-var Users = []User{
-	{ID: 1, Username: "John Doe", Email: "Johndoe@gmail.com", image: "image", password: 123, role: "admin", status: "status", language: "bahasa"},
-	{ID: 2, Username: "Sun Goku", Email: "Sungoku@gmail.com", image: "image", password: 456, role: "staff", status: "status", language: "bahasa"},
-	{ID: 3, Username: "Sun Goku", Email: "Sungoku2@gmail.com", image: "image", password: 789, role: "manager", status: "status", language: "bahasa"},
+type response struct {
+	Message string         `json:"message"`
+	Data    []UserResponse `json:"data"`
 }
 
-// PostUser godoc
-// @Summary Create a new user
-// @Description Create a new user
-// @Tags users
-// @Accept json
-// @Produce json
-// @Param user body User true "User details"
-// @Success 200 {object} map[string]interface{}
-// @Router /users [post]
-func PostUser(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "Post User Success",
-	})
+// handler user
+// @summary Get all users
+// @description Get all users
+// @tags users
+// @produce json
+// @success 200 {object} response
+// @router /users [get]
+func GetUsers(c echo.Context) error {
+	query := "SELECT id, image_id, username, email, role, status, language FROM users"
+
+	rows, err := utils.DB.Query(query)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"message": "Failed to retrieve users",
+		})
+	}
+
+	var userResponses []UserResponse
+
+	for rows.Next() {
+		var userResponse UserResponse
+		err := rows.Scan(&userResponse.ID, &userResponse.ImageID, &userResponse.Username, &userResponse.Email, &userResponse.Role, &userResponse.Status, &userResponse.Language)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"message": "Failed to scan user data",
+			})
+		}
+
+		userResponses = append(userResponses, userResponse)
+	}
+
+	response := response{
+		Message: "Success",
+		Data:    userResponses,
+	}
+	return c.JSON(http.StatusOK, response)
 }
 
+// handler user
+// @summary Get user by ID
+// @description Get user by ID
+// @tags users
+// @produce json
+// @Param id path string true "Reservation ID"
+// @success 200 {object} response
+// @router /users/{id} [get]
 func GetUserByID(c echo.Context) error {
+	query := "SELECT id, image_id, username, email, role, status, language FROM users WHERE id = $1"
+
 	id := c.Param("id")
-	user, exist := users[id]
-	if !exist {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "user not found"})
+	var userResponse UserResponse
+
+	err := utils.DB.QueryRow(query, id).Scan(&userResponse.ID, &userResponse.ImageID, &userResponse.Username, &userResponse.Email, &userResponse.Role, &userResponse.Status, &userResponse.Language)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"message": "Failed to retrieve user",
+		})
 	}
-	return c.JSON(http.StatusOK, user)
-}
 
-func CreateUser(c echo.Context) error {
-	var user User
-	if err := c.Bind(&user); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid input"})
+	response := response{
+		Message: "Success",
+		Data:    []UserResponse{userResponse},
 	}
-	users[user.ID] = user
-	return c.JSON(http.StatusCreated, user)
+	return c.JSON(http.StatusOK, response)
 }
 
-func GetUser(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "Get User Success",
-	})
-}
-
-// handler room
-func GetRoom(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "Get Room Success",
-	})
-}
-
-var Room = []Room{
-	{ID: 1, Name: "Nilna", Type: "small", Capacity: 10, Price: 100},
-	{ID: 2, Name: "Alminah", Type: "medium", Capacity: 10, Price: 100},
-	{ID: 1, Name: "Nilna", Type: "large", Capacity: 10, Price: 100},
-}
-
-func CreateRoom(c echo.Context) error {
-	var room Room
-	if err := c.Bind(&room); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid input"})
-	}
-	rooms[room.ID] = room
-	return c.JSON(http.StatusCreated, room)
-
-}
-
-// handler untuk reservation
-func CreateReservationForRoom(c echo.Context) error {
-	RoomID := c.Param("id")
-	var res Reservation
-	if err := c.Bind(&res); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid input"})
-	}
-	res.Room.ID = RoomID
-	reservation[res.ID] = res
-	return c.JSON(http.StatusCreated, res)
-}
-
-// handler untuk snack
-func GetSnack(c echo.Context) error {
-	return c.JSON(http.StatusOK, snacks)
-}
-
-var Snack = []Snack{
-	{ID: 1, Name: "Snack 1", Category: "Food", Package: "Small", Price: "10"},
-	{ID: 2, Name: "Snack 1", Category: "Food", Package: "Small", Price: "10"},
-	{ID: 2, Name: "Snack 1", Category: "Food", Package: "Small", Price: "10"},
-}
-
-func CreateSnack(c echo.Context) error {
-	var snack Snack
-	if err := c.Bind(&snack); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid input"})
-	}
-	snacks[snack.ID] = snack
-	return c.JSON(http.StatusCreated, snack)
-}
+// // handler untuk reservation
+// func CreateReservationForRoom(c echo.Context) error {
+// 	RoomID := c.Param("id")
+// 	var res Reservation
+// 	if err := c.Bind(&res); err != nil {
+// 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid input"})
+// 	}
+// 	res.Room.ID = RoomID
+// 	reservation[res.ID] = res
+// 	return c.JSON(http.StatusCreated, res)
+// }

@@ -25,6 +25,11 @@ type UserResponse struct {
 	ID       string `json:"id"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
+	Password string `json:"password"`
+	Role     string `json:"role"`
+	Status   bool   `json:"status"`
+	Language string `json:"language"`
+	ImageID  string `json:"image_id"`
 }
 
 type UserLogin struct {

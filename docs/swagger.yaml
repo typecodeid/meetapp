@@ -19,11 +19,11 @@ definitions:
       phone:
         type: string
       room:
-        $ref: '#/definitions/handlers.Room'
+        $ref: '#/definitions/handlers.Rooms'
       room_price:
         type: integer
       snack:
-        $ref: '#/definitions/handlers.Snack'
+        $ref: '#/definitions/handlers.Snacks'
       start_time:
         type: string
       status:
@@ -48,7 +48,20 @@ definitions:
       type:
         type: string
     type: object
-  handlers.Snack:
+  handlers.Rooms:
+    properties:
+      capacity:
+        type: integer
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      type:
+        type: string
+    type: object
+  handlers.Snacks:
     properties:
       category:
         type: string
@@ -107,6 +120,43 @@ definitions:
     required:
     - email
     - password
+    type: object
+  handlers.UserResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      image_id:
+        type: string
+      language:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      status:
+        type: boolean
+      username:
+        type: string
+    type: object
+  handlers.response:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handlers.UserResponse'
+        type: array
+      message:
+        type: string
+    type: object
+  handlers.responseRoom:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/handlers.Room'
+        type: array
+      message:
+        type: string
     type: object
 host: localhost:7000
 info:
@@ -281,10 +331,71 @@ paths:
       summary: Edit a reservation
       tags:
       - reservations
-  /users:
+  /rooms:
     get:
+      description: Retrieve all rooms in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.responseRoom'
+      summary: Get all rooms
+      tags:
+      - rooms
+    post:
       consumes:
       - application/json
+      description: Create a new room
+      parameters:
+      - description: Room details
+        in: body
+        name: room
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.Room'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/handlers.Room'
+      summary: Create a new room
+      tags:
+      - rooms
+  /snack:
+    get:
+      description: Get Snack
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Snack
+      tags:
+      - Snack
+    post:
+      description: Create Snack
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create Snack
+      tags:
+      - Snack
+  /users:
+    get:
       description: Get all users
       produces:
       - application/json
@@ -292,31 +403,27 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/handlers.response'
       summary: Get all users
       tags:
       - users
-    post:
-      consumes:
-      - application/json
-      description: Create a new user
+  /users/{id}:
+    get:
+      description: Get user by ID
       parameters:
-      - description: User details
-        in: body
-        name: user
+      - description: Reservation ID
+        in: path
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/handlers.User'
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
-      summary: Create a new user
+            $ref: '#/definitions/handlers.response'
+      summary: Get user by ID
       tags:
       - users
 swagger: "2.0"

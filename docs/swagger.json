@@ -259,12 +259,105 @@
                 }
             }
         },
-        "/users": {
+        "/rooms": {
             "get": {
-                "description": "Get all users",
+                "description": "Retrieve all rooms in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get all rooms",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.responseRoom"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new room",
                 "consumes": [
                     "application/json"
                 ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Create a new room",
+                "parameters": [
+                    {
+                        "description": "Room details",
+                        "name": "room",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Room"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Room"
+                        }
+                    }
+                }
+            }
+        },
+        "/snack": {
+            "get": {
+                "description": "Get Snack",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Snack"
+                ],
+                "summary": "Get Snack",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create Snack",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Snack"
+                ],
+                "summary": "Create Snack",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "Get all users",
                 "produces": [
                     "application/json"
                 ],
@@ -276,41 +369,36 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/handlers.response"
                         }
                     }
                 }
-            },
-            "post": {
-                "description": "Create a new user",
-                "consumes": [
-                    "application/json"
-                ],
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "description": "Get user by ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "users"
                 ],
-                "summary": "Create a new user",
+                "summary": "Get user by ID",
                 "parameters": [
                     {
-                        "description": "User details",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handlers.User"
-                        }
+                        "type": "string",
+                        "description": "Reservation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/handlers.response"
                         }
                     }
                 }
@@ -346,13 +434,13 @@
                     "type": "string"
                 },
                 "room": {
-                    "$ref": "#/definitions/handlers.Room"
+                    "$ref": "#/definitions/handlers.Rooms"
                 },
                 "room_price": {
                     "type": "integer"
                 },
                 "snack": {
-                    "$ref": "#/definitions/handlers.Snack"
+                    "$ref": "#/definitions/handlers.Snacks"
                 },
                 "start_time": {
                     "type": "string"
@@ -391,7 +479,27 @@
                 }
             }
         },
-        "handlers.Snack": {
+        "handlers.Rooms": {
+            "type": "object",
+            "properties": {
+                "capacity": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.Snacks": {
             "type": "object",
             "properties": {
                 "category": {
@@ -477,6 +585,63 @@
                 "password": {
                     "type": "string",
                     "minLength": 6
+                }
+            }
+        },
+        "handlers.UserResponse": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image_id": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "boolean"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.response": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.UserResponse"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.responseRoom": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.Room"
+                    }
+                },
+                "message": {
+                    "type": "string"
                 }
             }
         }
