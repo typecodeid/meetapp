@@ -49,6 +49,8 @@ func main() {
 	// user
 	route.GET("/users", routeApp.GetUsers)
 	route.GET("/users/:id", routeApp.GetUserByID)
+	route.PUT("/users/:id", routeApp.UpdateUserByID)
+	route.DELETE("/users/:id", routeApp.DeleteUserByID)
 
 	// room
 	route.GET("/rooms", routeApp.GetRooms)
