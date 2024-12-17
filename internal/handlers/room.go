@@ -95,19 +95,40 @@ func GetRoomByID(c echo.Context) error {
 // @Router /rooms/{id} [put]
 func UpdateRoomByID(c echo.Context) error {
 	id := c.Param("id")
-	query := "UPDATE rooms SET name = $1, type = $2, capacity = $3, price = $4 WHERE id = $5"
 	var room Room
 
-	err := utils.DB.QueryRow(query, room.Name, room.Type, room.Capacity, room.Price, id).Scan(&room.ID, &room.Name, &room.Type, &room.Capacity, &room.Price)
+	if err := c.Bind(&room); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"message": "Invalid request payload"})
+	}
+
+	// Update data di database
+	query := "UPDATE rooms SET name = $1, type = $2, capacity = $3, price = $4 WHERE id = $5"
+	result, err := utils.DB.Exec(query, room.Name, room.Type, room.Capacity, room.Price, id)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"message": "Failed to retrieve user",
+			"message": "Failed to update room",
 		})
 	}
 
-	response := responseRoom{
-		Message: "Success",
-		Data:    []Room{room},
+	// Periksa apakah ada baris yang diperbarui
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Error checking affected rows"})
+	}
+	if rowsAffected == 0 {
+		return c.JSON(http.StatusNotFound, map[string]string{"message": "Room not found"})
+	}
+
+	// Ambil data terbaru setelah update
+	selectQuery := "SELECT id, name, type, capacity, price FROM rooms WHERE id = $1"
+	err = utils.DB.QueryRow(selectQuery, id).Scan(&room.ID, &room.Name, &room.Type, &room.Capacity, &room.Price)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to retrieve updated room"})
+	}
+
+	response := map[string]interface{}{
+		"message": "Room updated successfully",
+		"data":    room,
 	}
 	return c.JSON(http.StatusOK, response)
 }
