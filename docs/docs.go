@@ -156,7 +156,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Create a new reservation",
+                "description": "Note: Untuk Booking date menggunakan format YYYY-MM-DD",
                 "consumes": [
                     "application/json"
                 ],
@@ -174,7 +174,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handlers.Reservation"
+                            "$ref": "#/definitions/handlers.ReservationInput"
                         }
                     }
                 ],
@@ -557,6 +557,9 @@ const docTemplate = `{
         "handlers.Reservation": {
             "type": "object",
             "properties": {
+                "booking_date": {
+                    "type": "string"
+                },
                 "company": {
                     "type": "string"
                 },
@@ -584,11 +587,17 @@ const docTemplate = `{
                 "room": {
                     "$ref": "#/definitions/handlers.Rooms"
                 },
+                "room_id": {
+                    "type": "string"
+                },
                 "room_price": {
                     "type": "integer"
                 },
                 "snack": {
                     "$ref": "#/definitions/handlers.Snacks"
+                },
+                "snack_id": {
+                    "type": "string"
                 },
                 "start_time": {
                     "type": "string"
@@ -599,11 +608,58 @@ const docTemplate = `{
                 "total_snack": {
                     "type": "integer"
                 },
+                "total_snack_price": {
+                    "type": "integer"
+                },
                 "updated_at": {
                     "type": "string"
                 },
                 "user": {
                     "$ref": "#/definitions/handlers.User"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.ReservationInput": {
+            "type": "object",
+            "properties": {
+                "booking_date": {
+                    "type": "string"
+                },
+                "company": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "participants": {
+                    "type": "integer"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "room_id": {
+                    "type": "string",
+                    "example": "6066f8a1-0a80-4299-86ca-99888912bbe5"
+                },
+                "snack_id": {
+                    "type": "string",
+                    "example": "b8f8cab4-9f0e-4d08-88aa-9fd465a52536"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "total_snack": {
+                    "type": "integer"
+                },
+                "user_id": {
+                    "type": "string",
+                    "example": "21691490-6817-4bf4-9bf7-3bf624d210a7"
                 }
             }
         },

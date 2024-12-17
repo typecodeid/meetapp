@@ -2,6 +2,8 @@ basePath: /
 definitions:
   handlers.Reservation:
     properties:
+      booking_date:
+        type: string
       company:
         type: string
       created_at:
@@ -20,20 +22,56 @@ definitions:
         type: string
       room:
         $ref: '#/definitions/handlers.Rooms'
+      room_id:
+        type: string
       room_price:
         type: integer
       snack:
         $ref: '#/definitions/handlers.Snacks'
+      snack_id:
+        type: string
       start_time:
         type: string
       status:
         type: string
       total_snack:
         type: integer
+      total_snack_price:
+        type: integer
       updated_at:
         type: string
       user:
         $ref: '#/definitions/handlers.User'
+      user_id:
+        type: string
+    type: object
+  handlers.ReservationInput:
+    properties:
+      booking_date:
+        type: string
+      company:
+        type: string
+      end_time:
+        type: string
+      name:
+        type: string
+      participants:
+        type: integer
+      phone:
+        type: string
+      room_id:
+        example: 6066f8a1-0a80-4299-86ca-99888912bbe5
+        type: string
+      snack_id:
+        example: b8f8cab4-9f0e-4d08-88aa-9fd465a52536
+        type: string
+      start_time:
+        type: string
+      total_snack:
+        type: integer
+      user_id:
+        example: 21691490-6817-4bf4-9bf7-3bf624d210a7
+        type: string
     type: object
   handlers.Room:
     properties:
@@ -262,14 +300,14 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new reservation
+      description: 'Note: Untuk Booking date menggunakan format YYYY-MM-DD'
       parameters:
       - description: Reservation details
         in: body
         name: reservation
         required: true
         schema:
-          $ref: '#/definitions/handlers.Reservation'
+          $ref: '#/definitions/handlers.ReservationInput'
       produces:
       - application/json
       responses:
