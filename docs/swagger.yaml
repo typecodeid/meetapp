@@ -365,6 +365,65 @@ paths:
       summary: Create a new room
       tags:
       - rooms
+  /rooms/{id}:
+    delete:
+      description: Delete a room by ID
+      parameters:
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Delete a room by ID
+      tags:
+      - rooms
+    get:
+      description: Get a room by ID
+      parameters:
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.responseRoom'
+      summary: Get a room by ID
+      tags:
+      - rooms
+    put:
+      consumes:
+      - application/json
+      description: Update a room by ID
+      parameters:
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Room details
+        in: body
+        name: room
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.Room'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.responseRoom'
+      summary: Update a room by ID
+      tags:
+      - rooms
   /snack:
     get:
       description: Get Snack
