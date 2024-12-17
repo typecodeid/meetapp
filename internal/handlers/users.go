@@ -78,7 +78,6 @@ func GetUserByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-// // handler untuk reservation
 // func CreateReservationForRoom(c echo.Context) error {
 // 	RoomID := c.Param("id")
 // 	var res Reservation
@@ -89,3 +88,29 @@ func GetUserByID(c echo.Context) error {
 // 	reservation[res.ID] = res
 // 	return c.JSON(http.StatusCreated, res)
 // }
+
+// @summary Update user by ID
+// @description Update user by ID
+// @tags users
+// @produce json
+// @Param id path string true "Reservation ID"
+// @success 200 {object} response
+// @router /users/{id} [put]
+func UpdateUserByID(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "Update User Here",
+	})
+}
+
+// @summary Delete user by ID
+// @description Delete user by ID
+// @tags users
+// @produce json
+// @Param id path string true "Reservation ID"
+// @success 200 {object} response
+// @router /users/{id} [delete]
+func DeleteUserByID(c echo.Context) error {
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "Delete User Here",
+	})
+}
