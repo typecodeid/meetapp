@@ -56,6 +56,85 @@ func GetRooms(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
+// GetRoomByID godoc
+// @Summary Get a room by ID
+// @Description Get a room by ID
+// @Tags rooms
+// @Produce json
+// @Param id path string true "Room ID"
+// @Success 200 {object} responseRoom
+// @Router /rooms/{id} [get]
+func GetRoomByID(c echo.Context) error {
+	id := c.Param("id")
+	query := "SELECT id, name, type, capacity, price FROM rooms WHERE id = $1"
+	var room Room
+
+	err := utils.DB.QueryRow(query, id).Scan(&room.ID, &room.Name, &room.Type, &room.Capacity, &room.Price)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"message": "Failed to retrieve user",
+		})
+	}
+
+	response := responseRoom{
+		Message: "Success",
+		Data:    []Room{room},
+	}
+	return c.JSON(http.StatusOK, response)
+}
+
+// UpdateRoomByID godoc
+// @Summary Update a room by ID
+// @Description Update a room by ID
+// @Tags rooms
+// @Accept json
+// @Produce json
+// @Param id path string true "Room ID"
+// @Param room body Room true "Room details"
+// @Success 200 {object} responseRoom
+// @Router /rooms/{id} [put]
+func UpdateRoomByID(c echo.Context) error {
+	id := c.Param("id")
+	query := "UPDATE rooms SET name = $1, type = $2, capacity = $3, price = $4 WHERE id = $5"
+	var room Room
+
+	err := utils.DB.QueryRow(query, room.Name, room.Type, room.Capacity, room.Price, id).Scan(&room.ID, &room.Name, &room.Type, &room.Capacity, &room.Price)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"message": "Failed to retrieve user",
+		})
+	}
+
+	response := responseRoom{
+		Message: "Success",
+		Data:    []Room{room},
+	}
+	return c.JSON(http.StatusOK, response)
+}
+
+// DeleteRoomByID godoc
+// @Summary Delete a room by ID
+// @Description Delete a room by ID
+// @Tags rooms
+// @Produce json
+// @Param id path string true "Room ID"
+// Success 200 {object} map[string]string
+// @Router /rooms/{id} [delete]
+func DeleteRoomByID(c echo.Context) error {
+	id := c.Param("id")
+	query := "DELETE FROM rooms WHERE id = $1"
+	_, err := utils.DB.Exec(query, id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"message": "Failed to retrieve user",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "Room deleted successfully",
+	})
+}
+
 // CreateRoom godoc
 // @Summary Create a new room
 // @Description Create a new room

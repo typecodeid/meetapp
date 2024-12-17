@@ -54,8 +54,10 @@ func main() {
 
 	// room
 	route.GET("/rooms", routeApp.GetRooms)
+	route.GET("/rooms/:id", routeApp.GetRoomByID)
 	route.POST("/rooms", routeApp.CreateRoom)
-
+	route.PUT("/rooms/:id", routeApp.UpdateRoomByID)
+	route.DELETE("/rooms/:id", routeApp.DeleteRoomByID)
 	// route.POST("/room/:id/reservation", routeApp.CreateReservationForRoom)
 
 	// snack
