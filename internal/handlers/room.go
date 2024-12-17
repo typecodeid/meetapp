@@ -72,7 +72,7 @@ func GetRoomByID(c echo.Context) error {
 	err := utils.DB.QueryRow(query, id).Scan(&room.ID, &room.Name, &room.Type, &room.Capacity, &room.Price)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"message": "Failed to retrieve user",
+			"message": "Failed to retrieve room",
 		})
 	}
 

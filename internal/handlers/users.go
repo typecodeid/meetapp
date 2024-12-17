@@ -97,9 +97,43 @@ func GetUserByID(c echo.Context) error {
 // @success 200 {object} response
 // @router /users/{id} [put]
 func UpdateUserByID(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]string{
-		"message": "Update User Here",
-	})
+	id := c.Param("id")
+	var user User
+
+	if err := c.Bind(&user); err != nil {
+		return c.JSON(http.StatusOK, map[string]string{"message": "Invalid request payload"})
+	}
+
+	//update data di database
+	query := "UPDATE user SET name = $1, image_id =$2, username = $3, email = $4, role = $5, status = $6, Language = $7 WHERE id = $8 "
+	result, err := utils.DB.Exec(query, user.ImageID, user.Username, user.Email, user.Role, user.Status, user.Language, id)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"message": "Failed to update user",
+		})
+	}
+
+	// Periksa apakah ada baris yang diperbarui
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Error checking affected rows"})
+	}
+	if rowsAffected == 0 {
+		return c.JSON(http.StatusNotFound, map[string]string{"message": "User not found"})
+	}
+
+	// Ambil data terbaru setelah update
+	selectQuery := "SELECT id, image_id, username, email, role, status, language  FROM user WHERE id = $1"
+	err = utils.DB.QueryRow(selectQuery, id).Scan(&user.ID, &user.ImageID, &user.Username, &user.Email, &user.Role, &user.Status, &user.Language)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to retrieve updated room"})
+	}
+
+	response := map[string]interface{}{
+		"message": "User updated successfully",
+		"data":    user,
+	}
+	return c.JSON(http.StatusOK, response)
 }
 
 // @summary Delete user by ID
@@ -110,7 +144,15 @@ func UpdateUserByID(c echo.Context) error {
 // @success 200 {object} response
 // @router /users/{id} [delete]
 func DeleteUserByID(c echo.Context) error {
+	id := c.Param("id")
+	query := "DELETE FROM user WHERE id = $1"
+	_, err := utils.DB.Exec(query, id)
+	if err != nil {
+		return c.JSON(http.StatusOK, map[string]string{
+			"message": "Failed to delete user",
+		})
+	}
 	return c.JSON(http.StatusOK, map[string]string{
-		"message": "Delete User Here",
+		"message": "user deleted succesfully",
 	})
 }
