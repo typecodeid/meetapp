@@ -152,7 +152,7 @@ func AuthRegister(c echo.Context) error {
 	userID := uuid.New().String()
 
 	// Atur nilai default untuk field yang tidak diinput
-	defaultImageID := "/images/no-image"
+	defaultImageID := "4214124124124"
 	defaultRole := "user"
 	defaultStatus := false
 	defaultLanguage := "id"

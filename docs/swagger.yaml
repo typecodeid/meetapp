@@ -400,7 +400,13 @@ paths:
       - reservations
   /rooms:
     get:
-      description: Retrieve all rooms in the system
+      description: Retrieve all rooms in the system. Requires a valid Bearer token.
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -408,6 +414,20 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/handlers.responseRoom'
+        "401":
+          description: Unauthorized or invalid token
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
       summary: Get all rooms
       tags:
       - rooms

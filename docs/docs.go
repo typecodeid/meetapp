@@ -301,7 +301,12 @@ const docTemplate = `{
         },
         "/rooms": {
             "get": {
-                "description": "Retrieve all rooms in the system",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve all rooms in the system. Requires a valid Bearer token.",
                 "produces": [
                     "application/json"
                 ],
@@ -309,11 +314,38 @@ const docTemplate = `{
                     "rooms"
                 ],
                 "summary": "Get all rooms",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003ctoken\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/handlers.responseRoom"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized or invalid token",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }

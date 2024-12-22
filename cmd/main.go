@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	routeApp "meetapp/internal/handlers"
+	"meetapp/internal/middleware"
 	utils "meetapp/pkg/database"
 	"net/http"
 
@@ -53,12 +54,11 @@ func main() {
 	route.DELETE("/users/:id", routeApp.DeleteUserByID)
 
 	// room
-	route.GET("/rooms", routeApp.GetRooms)
-	route.GET("/rooms/:id", routeApp.GetRoomByID)
-	route.POST("/rooms", routeApp.CreateRoom)
-	route.PUT("/rooms/:id", routeApp.UpdateRoomByID)
-	route.DELETE("/rooms/:id", routeApp.DeleteRoomByID)
-	// route.POST("/room/:id/reservation", routeApp.CreateReservationForRoom)
+	route.GET("/rooms", routeApp.GetRooms, middleware.TokenRole("user"))
+	route.GET("/rooms/:id", routeApp.GetRoomByID, middleware.TokenRole("user"))
+	route.POST("/rooms", routeApp.CreateRoom, middleware.TokenRole("admin"))
+	route.PUT("/rooms/:id", routeApp.UpdateRoomByID, middleware.TokenRole("admin"))
+	route.DELETE("/rooms/:id", routeApp.DeleteRoomByID, middleware.TokenRole("admin"))
 
 	// snack
 	route.GET("/snack", routeApp.GetSnack)
