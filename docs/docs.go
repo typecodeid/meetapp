@@ -106,7 +106,7 @@ const docTemplate = `{
         },
         "/reservations": {
             "get": {
-                "description": "Retrieve all reservations in the system",
+                "description": "Retrieve all reservations in the system contoh: /reservations?status=cancel\u0026room_type=medium",
                 "consumes": [
                     "application/json"
                 ],
@@ -232,7 +232,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Edit a reservation",
+                "description": "Update the status of a reservation by its ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -242,7 +242,7 @@ const docTemplate = `{
                 "tags": [
                     "reservations"
                 ],
-                "summary": "Edit a reservation",
+                "summary": "Update reservation status",
                 "parameters": [
                     {
                         "type": "string",
@@ -250,11 +250,45 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Reservation status update",
+                        "name": "reservation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.UpdateStatusInput"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Success response",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request payload or missing status",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Reservation not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -267,7 +301,12 @@ const docTemplate = `{
         },
         "/rooms": {
             "get": {
-                "description": "Retrieve all rooms in the system",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve all rooms in the system. Requires a valid Bearer token.",
                 "produces": [
                     "application/json"
                 ],
@@ -275,11 +314,38 @@ const docTemplate = `{
                     "rooms"
                 ],
                 "summary": "Get all rooms",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003ctoken\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/handlers.responseRoom"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized or invalid token",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -615,7 +681,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user": {
-                    "$ref": "#/definitions/handlers.User"
+                    "$ref": "#/definitions/handlers.UserShow"
                 },
                 "user_id": {
                     "type": "string"
@@ -723,32 +789,15 @@ const docTemplate = `{
                 }
             }
         },
-        "handlers.User": {
+        "handlers.UpdateStatusInput": {
             "type": "object",
+            "required": [
+                "status"
+            ],
             "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "image_id": {
-                    "type": "string"
-                },
-                "language": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "role": {
-                    "type": "string"
-                },
                 "status": {
-                    "type": "boolean"
-                },
-                "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "cancel"
                 }
             }
         },
@@ -808,6 +857,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "boolean"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.UserShow": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image_id": {
+                    "type": "string"
+                },
+                "language": {
                     "type": "string"
                 },
                 "role": {

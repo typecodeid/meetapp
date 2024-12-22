@@ -61,9 +61,9 @@ func AuthLogin(c echo.Context) error {
 	}
 
 	// Query untuk mencari user berdasarkan email
-	query := "SELECT id, email, password, username FROM users WHERE email = $1 AND status = true"
+	query := "SELECT id, email, password, username, role FROM users WHERE email = $1 AND status = true"
 	var user User
-	err := utils.DB.QueryRow(query, input.Email).Scan(&user.ID, &user.Email, &user.Password, &user.Username)
+	err := utils.DB.QueryRow(query, input.Email).Scan(&user.ID, &user.Email, &user.Password, &user.Username, &user.Role)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Invalid credentials"})
@@ -77,8 +77,8 @@ func AuthLogin(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"message": "Invalid credentials"})
 	}
 
-	// Generate JWT token jika login berhasil
-	token, err := generateJWT(user.Email)
+	// Generate JWT token berdasarkan role
+	token, err := generateJWT(user.Email, user.Role)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to generate token"})
 	}
@@ -87,28 +87,29 @@ func AuthLogin(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "Login successful",
 		"token":   token,
+		"role":    user.Role,
 	})
 }
 
 // generateJWT membuat token JWT untuk pengguna
-func generateJWT(email string) (string, error) {
-	// Tentukan klaim (payload)
+func generateJWT(email, role string) (string, error) {
+	// Buat klaim token
 	claims := jwt.MapClaims{
-		"sub":   email,                                 // Menggunakan email sebagai subject
-		"email": email,                                 // Simpan email di dalam klaim
-		"exp":   time.Now().Add(time.Hour * 24).Unix(), // Token kadaluarsa dalam 24 jam
+		"email": email,
+		"role":  role,
+		"exp":   time.Now().Add(time.Hour * 24).Unix(), // Token valid selama 24 jam
 	}
 
-	// Membuat token JWT dengan menggunakan secret key
+	// Buat token menggunakan klaim
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	// Tandatangani token dengan secret key
-	tokenString, err := token.SignedString(jwtSecret)
+	// Tanda tangani token dengan secret key
+	signedToken, err := token.SignedString(jwtSecret)
 	if err != nil {
 		return "", err
 	}
 
-	return tokenString, nil
+	return signedToken, nil
 }
 
 // AuthRegister godoc
@@ -151,7 +152,7 @@ func AuthRegister(c echo.Context) error {
 	userID := uuid.New().String()
 
 	// Atur nilai default untuk field yang tidak diinput
-	defaultImageID := "/images/no-image"
+	defaultImageID := "4214124124124"
 	defaultRole := "user"
 	defaultStatus := false
 	defaultLanguage := "id"

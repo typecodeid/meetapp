@@ -28,6 +28,16 @@ type User struct {
 	Language string `json:"language"`
 }
 
+type UserShow struct {
+	ID       string `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	ImageID  string `json:"image_id"`
+	Role     string `json:"role"`
+	Status   bool   `json:"status"`
+	Language string `json:"language"`
+}
+
 type Snacks struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
@@ -37,27 +47,27 @@ type Snacks struct {
 }
 
 type Reservation struct {
-	ID                string `json:"id"`
-	RoomID            string `json:"room_id"`
-	UserID            string `json:"user_id"`
-	SnackID           string `json:"snack_id"`
-	StartTime         string `json:"start_time"`
-	EndTime           string `json:"end_time"`
-	BookingDate       string `json:"booking_date"`
-	CreatedAt         string `json:"created_at"`
-	UpdatedAt         string `json:"updated_at"`
-	Status            string `json:"status"`
-	Participants      int    `json:"participants"`
-	Name              string `json:"name"`
-	Total_Snack       int    `json:"total_snack"`
-	Total_Snack_Price int    `json:"total_snack_price"`
-	Company           string `json:"company"`
-	Phone             string `json:"phone"`
-	Room_price        int    `json:"room_price"`
-	Final_price       int    `json:"final_price"`
-	User              User   `json:"user"`
-	Room              Rooms  `json:"room"`
-	Snack             Snacks `json:"snack"`
+	ID                string   `json:"id"`
+	RoomID            string   `json:"room_id"`
+	UserID            string   `json:"user_id"`
+	SnackID           string   `json:"snack_id"`
+	StartTime         string   `json:"start_time"`
+	EndTime           string   `json:"end_time"`
+	BookingDate       string   `json:"booking_date"`
+	CreatedAt         string   `json:"created_at"`
+	UpdatedAt         string   `json:"updated_at"`
+	Status            string   `json:"status"`
+	Participants      int      `json:"participants"`
+	Name              string   `json:"name"`
+	Total_Snack       int      `json:"total_snack"`
+	Total_Snack_Price int      `json:"total_snack_price"`
+	Company           string   `json:"company"`
+	Phone             string   `json:"phone"`
+	Room_price        int      `json:"room_price"`
+	Final_price       int      `json:"final_price"`
+	User              UserShow `json:"user"`
+	Room              Rooms    `json:"room"`
+	Snack             Snacks   `json:"snack"`
 }
 
 type ReservationInput struct {
@@ -95,11 +105,15 @@ type ResponseReservation struct {
 	Final_price       int    `json:"final_price"`
 }
 
+type UpdateStatusInput struct {
+	Status string `json:"status" validate:"required" example:"cancel"`
+}
+
 var data = []Reservation{}
 
-// GetAll godoc
+// GetAllReservation godoc
 // @Summary Get all reservations
-// @Description Retrieve all reservations in the system
+// @Description Retrieve all reservations in the system contoh: /reservations?status=cancel&room_type=medium
 // @Tags reservations
 // @Accept json
 // @Produce json
@@ -109,80 +123,142 @@ var data = []Reservation{}
 // @Param end_date query string false "Filter by end date (YYYY-MM-DD)"
 // @Success 200 {array} Reservation
 // @Router /reservations [get]
-func GetAll(c echo.Context) error {
-	type Response struct {
-		Message string        `json:"message"`
-		Data    []Reservation `json:"data"`
-	}
-
+func GetAllReservation(c echo.Context) error {
+	// Ambil query parameter
 	status := c.QueryParam("status")
 	roomType := c.QueryParam("room_type")
-	startDateStr := c.QueryParam("start_date") // rename dari starDate ke startDateStr
-	endDateStr := c.QueryParam("end_date")     // rename dari endDate ke endDateStr
+	startDateStr := c.QueryParam("start_date")
+	endDateStr := c.QueryParam("end_date")
 
-	var startDate, endDate time.Time
-	var err error
+	// Inisialisasi query SQL dasar
+	query := `
+		SELECT 
+			r.id, r.room_id, r.user_id, r.snack_id, r.start_time, r.end_time, r.booking_date, 
+			r.created_at, r.updated_at, r.status, r.participant, r.name, r.total_snack, 
+			r.total_snack_price, r.company, r.phone, r.room_price, r.final_price,
+			rm.id AS room_id, rm.name AS room_name, rm.type AS room_type, rm.capacity AS room_capacity, rm.price AS room_price,
+			u.id AS user_id, u.username AS user_username, u.email AS user_email, u.image_id AS user_image_id, u.role AS user_role, u.status AS user_status, u.language AS user_language,
+			s.id AS snack_id, s.name AS snack_name, s.category AS snack_category, s.package AS snack_package, s.price AS snack_price
+		FROM 
+			reservations r
+		LEFT JOIN 
+			rooms rm ON r.room_id = rm.id
+		LEFT JOIN 
+			users u ON r.user_id = u.id
+		LEFT JOIN 
+			snacks s ON r.snack_id = s.id
+		WHERE 
+			1 = 1
+	`
 
-	// Parse start_date jika ada
+	// Variabel untuk menyimpan parameter
+	params := []interface{}{}
+	paramIndex := 1 // PostgreSQL menggunakan $1, $2, ...
+
+	// Tambahkan filter berdasarkan query parameter jika tersedia
+	if status != "" {
+		query += fmt.Sprintf(" AND r.status = $%d", paramIndex)
+		params = append(params, status)
+		paramIndex++
+	}
+
+	if roomType != "" {
+		query += fmt.Sprintf(" AND rm.type = $%d", paramIndex)
+		params = append(params, roomType)
+		paramIndex++
+	}
+
 	if startDateStr != "" {
-		startDate, err = time.Parse("2006-01-02", startDateStr)
+		startDate, err := time.Parse("2006-01-02", startDateStr)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Invalid start date format",
 			})
 		}
+		query += fmt.Sprintf(" AND r.booking_date >= $%d", paramIndex)
+		params = append(params, startDate)
+		paramIndex++
 	}
 
-	// Parse end_date jika ada
 	if endDateStr != "" {
-		endDate, err = time.Parse("2006-01-02", endDateStr)
+		endDate, err := time.Parse("2006-01-02", endDateStr)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{
 				"message": "Invalid end date format",
 			})
 		}
+		query += fmt.Sprintf(" AND r.booking_date <= $%d", paramIndex)
+		params = append(params, endDate)
+		paramIndex++
 	}
 
-	filteredData := []Reservation{}
+	// Jalankan query dengan parameter
+	rows, err := utils.DB.Query(query, params...)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"message": err.Error(),
+		})
+	}
+	defer rows.Close()
 
-	for _, r := range data {
-		// Filter status
-		if status != "" && r.Status != status {
-			continue
+	var reservations []Reservation
+
+	// Iterasi hasil query dan mapping ke struct
+	for rows.Next() {
+		var reservationData Reservation
+
+		err := rows.Scan(
+			&reservationData.ID,
+			&reservationData.RoomID,
+			&reservationData.UserID,
+			&reservationData.SnackID,
+			&reservationData.StartTime,
+			&reservationData.EndTime,
+			&reservationData.BookingDate,
+			&reservationData.CreatedAt,
+			&reservationData.UpdatedAt,
+			&reservationData.Status,
+			&reservationData.Participants,
+			&reservationData.Name,
+			&reservationData.Total_Snack,
+			&reservationData.Total_Snack_Price,
+			&reservationData.Company,
+			&reservationData.Phone,
+			&reservationData.Room_price,
+			&reservationData.Final_price,
+			// Room details
+			&reservationData.Room.ID,
+			&reservationData.Room.Name,
+			&reservationData.Room.Type,
+			&reservationData.Room.Capacity,
+			&reservationData.Room.Price,
+			// User details
+			&reservationData.User.ID,
+			&reservationData.User.Username,
+			&reservationData.User.Email,
+			&reservationData.User.ImageID,
+			&reservationData.User.Role,
+			&reservationData.User.Status,
+			&reservationData.User.Language,
+			// Snack details
+			&reservationData.Snack.ID,
+			&reservationData.Snack.Name,
+			&reservationData.Snack.Category,
+			&reservationData.Snack.Package,
+			&reservationData.Snack.Price,
+		)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"message": err.Error(),
+			})
 		}
-
-		// Filter room_type
-		if roomType != "" && r.Room.Type != roomType {
-			continue
-		}
-
-		// Parsing StartTime & EndTime dari reservation
-		reservationStart, errStart := time.Parse(time.RFC3339, r.StartTime)
-		reservationEnd, errEnd := time.Parse(time.RFC3339, r.EndTime)
-		if errStart != nil || errEnd != nil {
-			// Jika data tidak valid, skip saja
-			continue
-		}
-
-		// Filter berdasarkan start_date
-		if !startDate.IsZero() && reservationStart.Before(startDate) {
-			continue
-		}
-
-		// Filter berdasarkan end_date
-		if !endDate.IsZero() && reservationEnd.After(endDate) {
-			continue
-		}
-
-		// Jika semua filter lolos, masukkan ke filteredData
-		filteredData = append(filteredData, r)
+		reservations = append(reservations, reservationData)
 	}
 
-	response := Response{
-		Message: "Success",
-		Data:    filteredData, // Pastikan menggunakan filteredData, bukan data
-	}
-	return c.JSON(http.StatusOK, response)
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "Success",
+		"data":    reservations,
+	})
 }
 
 // GetByID godoc
@@ -197,33 +273,140 @@ func GetAll(c echo.Context) error {
 // @Router /reservations/{id} [get]
 func GetByID(c echo.Context) error {
 	id := c.Param("id")
-	for _, reservation := range data {
-		if reservation.ID == id {
-			return c.JSON(http.StatusOK, map[string]interface{}{
-				"message": "Success",
-				"data":    reservation,
-			})
-		}
+
+	// Query untuk mendapatkan detail reservasi beserta user, room, dan snack tanpa kolom password
+	query := `
+		SELECT 
+			r.id, r.room_id, r.user_id, r.snack_id, r.start_time, r.end_time, r.booking_date, 
+			r.created_at, r.updated_at, r.status, r.participant, r.name, r.total_snack, 
+			r.total_snack_price, r.company, r.phone, r.room_price, r.final_price,
+			rm.id AS room_id, rm.name AS room_name, rm.type AS room_type, rm.capacity AS room_capacity, rm.price AS room_price,
+			u.id AS user_id, u.username AS user_username, u.email AS user_email, u.image_id AS user_image_id, u.role AS user_role, u.status AS user_status, u.language AS user_language,
+			s.id AS snack_id, s.name AS snack_name, s.category AS snack_category, s.package AS snack_package, s.price AS snack_price
+		FROM 
+			reservations r
+		LEFT JOIN 
+			rooms rm ON r.room_id = rm.id
+		LEFT JOIN 
+			users u ON r.user_id = u.id
+		LEFT JOIN 
+			snacks s ON r.snack_id = s.id
+		WHERE 
+			r.id = $1
+	`
+
+	var reservationData Reservation
+
+	err := utils.DB.QueryRow(query, id).Scan(
+		&reservationData.ID,
+		&reservationData.RoomID,
+		&reservationData.UserID,
+		&reservationData.SnackID,
+		&reservationData.StartTime,
+		&reservationData.EndTime,
+		&reservationData.BookingDate,
+		&reservationData.CreatedAt,
+		&reservationData.UpdatedAt,
+		&reservationData.Status,
+		&reservationData.Participants,
+		&reservationData.Name,
+		&reservationData.Total_Snack,
+		&reservationData.Total_Snack_Price,
+		&reservationData.Company,
+		&reservationData.Phone,
+		&reservationData.Room_price,
+		&reservationData.Final_price,
+		// Room details
+		&reservationData.Room.ID,
+		&reservationData.Room.Name,
+		&reservationData.Room.Type,
+		&reservationData.Room.Capacity,
+		&reservationData.Room.Price,
+		// User details (tanpa password)
+		&reservationData.User.ID,
+		&reservationData.User.Username,
+		&reservationData.User.Email,
+		&reservationData.User.ImageID,
+		&reservationData.User.Role,
+		&reservationData.User.Status,
+		&reservationData.User.Language,
+		// Snack details
+		&reservationData.Snack.ID,
+		&reservationData.Snack.Name,
+		&reservationData.Snack.Category,
+		&reservationData.Snack.Package,
+		&reservationData.Snack.Price,
+	)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, map[string]interface{}{
+			"message": "Reservation not found",
+			"error":   err.Error(),
+		})
 	}
 
-	// Jika data tidak ditemukan
-	return c.JSON(http.StatusNotFound, map[string]string{
-		"message": "Reservation not found",
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "Success",
+		"data":    reservationData,
 	})
 }
 
 // PutReservation godoc
-// @Summary Edit a reservation
-// @Description Edit a reservation
+// @Summary Update reservation status
+// @Description Update the status of a reservation by its ID
 // @Tags reservations
 // @Accept json
 // @Produce json
 // @Param id path string true "Reservation ID"
-// @Success 200 {object} map[string]string
+// @Param reservation body UpdateStatusInput true "Reservation status update"
+// @Success 200 {object} map[string]interface{} "Success response"
+// @Failure 400 {object} map[string]string "Invalid request payload or missing status"
+// @Failure 404 {object} map[string]string "Reservation not found"
+// @Failure 500 {object} map[string]string "Internal server error"
 // @Router /reservations/{id} [put]
 func PutReservation(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]string{
-		"message": "Edit data",
+	// Ambil ID dari path parameter
+	id := c.Param("id")
+
+	var input UpdateStatusInput
+
+	// Bind input JSON ke struct
+	if err := c.Bind(&input); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Invalid request payload",
+		})
+	}
+
+	// Validasi input
+	if input.Status == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "Status is required",
+		})
+	}
+
+	// Query untuk update status reservasi
+	query := `
+        UPDATE reservations
+        SET status = $1, updated_at = NOW()
+        WHERE id = $2
+        RETURNING id, status
+    `
+
+	var updatedID, updatedStatus string
+
+	err := utils.DB.QueryRow(query, input.Status, id).Scan(&updatedID, &updatedStatus)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"message": "Failed to update reservation",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "Reservation updated successfully",
+		"data": map[string]string{
+			"id":     updatedID,
+			"status": updatedStatus,
+		},
 	})
 }
 
@@ -268,7 +451,7 @@ func isRoomAvailable(roomID, bookingDate, startTime, endTime string) (bool, stri
 
 	// Cek apakah bookingDateTime adalah waktu lampau
 	if bookingDateTime.Before(time.Now().In(loc)) {
-		return false, "Waktu yang anda pilih sudah berlalu, Ayo move on melihat masa depan lebih cerah :D"
+		return false, "Kenangan kadang sulit dilupakan. Ayo move on, tanggal ini sudah lewat"
 	}
 
 	// Query untuk mengecek ketersediaan ruangan
