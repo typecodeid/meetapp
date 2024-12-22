@@ -41,7 +41,7 @@ definitions:
       updated_at:
         type: string
       user:
-        $ref: '#/definitions/handlers.User'
+        $ref: '#/definitions/handlers.UserShow'
       user_id:
         type: string
     type: object
@@ -112,24 +112,13 @@ definitions:
       price:
         type: string
     type: object
-  handlers.User:
+  handlers.UpdateStatusInput:
     properties:
-      email:
-        type: string
-      id:
-        type: string
-      image_id:
-        type: string
-      language:
-        type: string
-      password:
-        type: string
-      role:
-        type: string
       status:
-        type: boolean
-      username:
+        example: cancel
         type: string
+    required:
+    - status
     type: object
   handlers.UserInput:
     properties:
@@ -170,6 +159,23 @@ definitions:
       language:
         type: string
       password:
+        type: string
+      role:
+        type: string
+      status:
+        type: boolean
+      username:
+        type: string
+    type: object
+  handlers.UserShow:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      image_id:
+        type: string
+      language:
         type: string
       role:
         type: string
@@ -267,7 +273,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Retrieve all reservations in the system
+      description: 'Retrieve all reservations in the system contoh: /reservations?status=cancel&room_type=medium'
       parameters:
       - description: Filter by status
         in: query
@@ -350,23 +356,46 @@ paths:
     put:
       consumes:
       - application/json
-      description: Edit a reservation
+      description: Update the status of a reservation by its ID
       parameters:
       - description: Reservation ID
         in: path
         name: id
         required: true
         type: string
+      - description: Reservation status update
+        in: body
+        name: reservation
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateStatusInput'
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Success response
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request payload or missing status
           schema:
             additionalProperties:
               type: string
             type: object
-      summary: Edit a reservation
+        "404":
+          description: Reservation not found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update reservation status
       tags:
       - reservations
   /rooms:
