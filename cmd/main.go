@@ -41,7 +41,7 @@ func main() {
 	})
 
 	// reservation
-	route.GET("/reservations", routeApp.GetAll)
+	route.GET("/reservations", routeApp.GetAllReservation)
 	route.GET("/reservations/:id", routeApp.GetByID)
 	route.PUT("/reservations/:id", routeApp.PutReservation)
 	route.POST("/reservations", routeApp.PostReservation)

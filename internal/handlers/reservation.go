@@ -28,6 +28,16 @@ type User struct {
 	Language string `json:"language"`
 }
 
+type UserShow struct {
+	ID       string `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	ImageID  string `json:"image_id"`
+	Role     string `json:"role"`
+	Status   bool   `json:"status"`
+	Language string `json:"language"`
+}
+
 type Snacks struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
@@ -37,27 +47,27 @@ type Snacks struct {
 }
 
 type Reservation struct {
-	ID                string `json:"id"`
-	RoomID            string `json:"room_id"`
-	UserID            string `json:"user_id"`
-	SnackID           string `json:"snack_id"`
-	StartTime         string `json:"start_time"`
-	EndTime           string `json:"end_time"`
-	BookingDate       string `json:"booking_date"`
-	CreatedAt         string `json:"created_at"`
-	UpdatedAt         string `json:"updated_at"`
-	Status            string `json:"status"`
-	Participants      int    `json:"participants"`
-	Name              string `json:"name"`
-	Total_Snack       int    `json:"total_snack"`
-	Total_Snack_Price int    `json:"total_snack_price"`
-	Company           string `json:"company"`
-	Phone             string `json:"phone"`
-	Room_price        int    `json:"room_price"`
-	Final_price       int    `json:"final_price"`
-	User              User   `json:"user"`
-	Room              Rooms  `json:"room"`
-	Snack             Snacks `json:"snack"`
+	ID                string   `json:"id"`
+	RoomID            string   `json:"room_id"`
+	UserID            string   `json:"user_id"`
+	SnackID           string   `json:"snack_id"`
+	StartTime         string   `json:"start_time"`
+	EndTime           string   `json:"end_time"`
+	BookingDate       string   `json:"booking_date"`
+	CreatedAt         string   `json:"created_at"`
+	UpdatedAt         string   `json:"updated_at"`
+	Status            string   `json:"status"`
+	Participants      int      `json:"participants"`
+	Name              string   `json:"name"`
+	Total_Snack       int      `json:"total_snack"`
+	Total_Snack_Price int      `json:"total_snack_price"`
+	Company           string   `json:"company"`
+	Phone             string   `json:"phone"`
+	Room_price        int      `json:"room_price"`
+	Final_price       int      `json:"final_price"`
+	User              UserShow `json:"user"`
+	Room              Rooms    `json:"room"`
+	Snack             Snacks   `json:"snack"`
 }
 
 type ReservationInput struct {
@@ -97,7 +107,7 @@ type ResponseReservation struct {
 
 var data = []Reservation{}
 
-// GetAll godoc
+// GetAllReservation godoc
 // @Summary Get all reservations
 // @Description Retrieve all reservations in the system
 // @Tags reservations
@@ -109,80 +119,35 @@ var data = []Reservation{}
 // @Param end_date query string false "Filter by end date (YYYY-MM-DD)"
 // @Success 200 {array} Reservation
 // @Router /reservations [get]
-func GetAll(c echo.Context) error {
-	type Response struct {
-		Message string        `json:"message"`
-		Data    []Reservation `json:"data"`
+func GetAllReservation(c echo.Context) error {
+	query := "SELECT id, room_id, user_id, snack_id, start_time, end_time, booking_date, created_at, updated_at, status, participant, name, total_snack, total_snack_price, company, phone FROM reservations"
+
+	rows, err := utils.DB.Query(query)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"message": err.Error(),
+		})
 	}
 
-	status := c.QueryParam("status")
-	roomType := c.QueryParam("room_type")
-	startDateStr := c.QueryParam("start_date") // rename dari starDate ke startDateStr
-	endDateStr := c.QueryParam("end_date")     // rename dari endDate ke endDateStr
+	var reservation []Reservation
 
-	var startDate, endDate time.Time
-	var err error
-
-	// Parse start_date jika ada
-	if startDateStr != "" {
-		startDate, err = time.Parse("2006-01-02", startDateStr)
+	for rows.Next() {
+		var reservationData Reservation
+		err := rows.Scan(&reservationData.ID, &reservationData.RoomID, &reservationData.UserID, &reservationData.SnackID, &reservationData.StartTime, &reservationData.EndTime, &reservationData.BookingDate, &reservationData.CreatedAt, &reservationData.UpdatedAt, &reservationData.Status, &reservationData.Participants, &reservationData.Name, &reservationData.Total_Snack, &reservationData.Total_Snack_Price, &reservationData.Company, &reservationData.Phone)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Invalid start date format",
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"message": err.Error(),
 			})
 		}
+		reservation = append(reservation, reservationData)
+
 	}
 
-	// Parse end_date jika ada
-	if endDateStr != "" {
-		endDate, err = time.Parse("2006-01-02", endDateStr)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, map[string]string{
-				"message": "Invalid end date format",
-			})
-		}
-	}
-
-	filteredData := []Reservation{}
-
-	for _, r := range data {
-		// Filter status
-		if status != "" && r.Status != status {
-			continue
-		}
-
-		// Filter room_type
-		if roomType != "" && r.Room.Type != roomType {
-			continue
-		}
-
-		// Parsing StartTime & EndTime dari reservation
-		reservationStart, errStart := time.Parse(time.RFC3339, r.StartTime)
-		reservationEnd, errEnd := time.Parse(time.RFC3339, r.EndTime)
-		if errStart != nil || errEnd != nil {
-			// Jika data tidak valid, skip saja
-			continue
-		}
-
-		// Filter berdasarkan start_date
-		if !startDate.IsZero() && reservationStart.Before(startDate) {
-			continue
-		}
-
-		// Filter berdasarkan end_date
-		if !endDate.IsZero() && reservationEnd.After(endDate) {
-			continue
-		}
-
-		// Jika semua filter lolos, masukkan ke filteredData
-		filteredData = append(filteredData, r)
-	}
-
-	response := Response{
-		Message: "Success",
-		Data:    filteredData, // Pastikan menggunakan filteredData, bukan data
-	}
-	return c.JSON(http.StatusOK, response)
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "Success",
+		"data":    reservation,
+	})
 }
 
 // GetByID godoc
@@ -197,18 +162,80 @@ func GetAll(c echo.Context) error {
 // @Router /reservations/{id} [get]
 func GetByID(c echo.Context) error {
 	id := c.Param("id")
-	for _, reservation := range data {
-		if reservation.ID == id {
-			return c.JSON(http.StatusOK, map[string]interface{}{
-				"message": "Success",
-				"data":    reservation,
-			})
-		}
+
+	// Query untuk mendapatkan detail reservasi beserta user, room, dan snack tanpa kolom password
+	query := `
+		SELECT 
+			r.id, r.room_id, r.user_id, r.snack_id, r.start_time, r.end_time, r.booking_date, 
+			r.created_at, r.updated_at, r.status, r.participant, r.name, r.total_snack, 
+			r.total_snack_price, r.company, r.phone, r.room_price, r.final_price,
+			rm.id AS room_id, rm.name AS room_name, rm.type AS room_type, rm.capacity AS room_capacity, rm.price AS room_price,
+			u.id AS user_id, u.username AS user_username, u.email AS user_email, u.image_id AS user_image_id, u.role AS user_role, u.status AS user_status, u.language AS user_language,
+			s.id AS snack_id, s.name AS snack_name, s.category AS snack_category, s.package AS snack_package, s.price AS snack_price
+		FROM 
+			reservations r
+		LEFT JOIN 
+			rooms rm ON r.room_id = rm.id
+		LEFT JOIN 
+			users u ON r.user_id = u.id
+		LEFT JOIN 
+			snacks s ON r.snack_id = s.id
+		WHERE 
+			r.id = $1
+	`
+
+	var reservationData Reservation
+
+	err := utils.DB.QueryRow(query, id).Scan(
+		&reservationData.ID,
+		&reservationData.RoomID,
+		&reservationData.UserID,
+		&reservationData.SnackID,
+		&reservationData.StartTime,
+		&reservationData.EndTime,
+		&reservationData.BookingDate,
+		&reservationData.CreatedAt,
+		&reservationData.UpdatedAt,
+		&reservationData.Status,
+		&reservationData.Participants,
+		&reservationData.Name,
+		&reservationData.Total_Snack,
+		&reservationData.Total_Snack_Price,
+		&reservationData.Company,
+		&reservationData.Phone,
+		&reservationData.Room_price,
+		&reservationData.Final_price,
+		// Room details
+		&reservationData.Room.ID,
+		&reservationData.Room.Name,
+		&reservationData.Room.Type,
+		&reservationData.Room.Capacity,
+		&reservationData.Room.Price,
+		// User details (tanpa password)
+		&reservationData.User.ID,
+		&reservationData.User.Username,
+		&reservationData.User.Email,
+		&reservationData.User.ImageID,
+		&reservationData.User.Role,
+		&reservationData.User.Status,
+		&reservationData.User.Language,
+		// Snack details
+		&reservationData.Snack.ID,
+		&reservationData.Snack.Name,
+		&reservationData.Snack.Category,
+		&reservationData.Snack.Package,
+		&reservationData.Snack.Price,
+	)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, map[string]interface{}{
+			"message": "Reservation not found",
+			"error":   err.Error(),
+		})
 	}
 
-	// Jika data tidak ditemukan
-	return c.JSON(http.StatusNotFound, map[string]string{
-		"message": "Reservation not found",
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "Success",
+		"data":    reservationData,
 	})
 }
 
