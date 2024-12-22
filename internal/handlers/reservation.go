@@ -451,7 +451,7 @@ func isRoomAvailable(roomID, bookingDate, startTime, endTime string) (bool, stri
 
 	// Cek apakah bookingDateTime adalah waktu lampau
 	if bookingDateTime.Before(time.Now().In(loc)) {
-		return false, "Waktu yang anda pilih sudah berlalu, Ayo move on melihat masa depan lebih cerah :D"
+		return false, "Kenangan kadang sulit dilupakan. Ayo move on, tanggal ini sudah lewat"
 	}
 
 	// Query untuk mengecek ketersediaan ruangan
