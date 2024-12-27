@@ -42,16 +42,16 @@ func main() {
 	})
 
 	// reservation
-	route.GET("/reservations", routeApp.GetAllReservation)
-	route.GET("/reservations/:id", routeApp.GetByID)
-	route.PUT("/reservations/:id", routeApp.PutReservation)
-	route.POST("/reservations", routeApp.PostReservation)
+	route.GET("/reservations", routeApp.GetAllReservation, middleware.TokenRole("user"))
+	route.GET("/reservations/:id", routeApp.GetByID, middleware.TokenRole("user"))
+	route.PUT("/reservations/:id", routeApp.PutReservation, middleware.TokenRole("user"))
+	route.POST("/reservations", routeApp.PostReservation, middleware.TokenRole("user"))
 
 	// user
-	route.GET("/users", routeApp.GetUsers)
-	route.GET("/users/:id", routeApp.GetUserByID)
-	route.PUT("/users/:id", routeApp.UpdateUserByID)
-	route.DELETE("/users/:id", routeApp.DeleteUserByID)
+	route.GET("/users", routeApp.GetUsers, middleware.TokenRole("user"))
+	route.GET("/users/:id", routeApp.GetUserByID, middleware.TokenRole("user"))
+	route.PUT("/users/:id", routeApp.UpdateUserByID, middleware.TokenRole("user"))
+	route.DELETE("/users/:id", routeApp.DeleteUserByID, middleware.TokenRole("admin"))
 
 	// room
 	route.GET("/rooms", routeApp.GetRooms, middleware.TokenRole("user"))
@@ -61,8 +61,8 @@ func main() {
 	route.DELETE("/rooms/:id", routeApp.DeleteRoomByID, middleware.TokenRole("admin"))
 
 	// snack
-	route.GET("/snack", routeApp.GetSnack)
-	route.POST("/snack", routeApp.CreateSnack)
+	route.GET("/snack", routeApp.GetSnack, middleware.TokenRole("user"))
+	route.POST("/snack", routeApp.CreateSnack, middleware.TokenRole("user"))
 
 	//auth
 	route.POST("/login", routeApp.AuthLogin)
