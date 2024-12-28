@@ -41,6 +41,9 @@ func main() {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 
+	// Dashboard
+	route.GET("/dashboard", routeApp.GetDasboard, middleware.TokenRole("admin"))
+
 	// reservation
 	route.GET("/reservations", routeApp.GetAllReservation, middleware.TokenRole("user"))
 	route.GET("/reservations/:id", routeApp.GetByID, middleware.TokenRole("user"))
