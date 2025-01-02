@@ -36,7 +36,7 @@ func main() {
 
 	route := echo.New()
 	swag.ReadDoc()
-
+	route.Static("/uploads", "uploads")
 	route.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
@@ -70,6 +70,9 @@ func main() {
 	//auth
 	route.POST("/login", routeApp.AuthLogin)
 	route.POST("/register", routeApp.AuthRegister)
+
+	// images
+	route.POST("/images", routeApp.PostImage)
 
 	route.GET("/swagger/*", echoSwagger.WrapHandler)
 	route.Logger.Fatal(route.Start(":7000"))
