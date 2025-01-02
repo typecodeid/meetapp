@@ -42,13 +42,13 @@ func main() {
 	})
 
 	// Dashboard
-	route.GET("/dashboard", routeApp.GetDasboard, middleware.TokenRole("admin"))
+	route.GET("/dashboard", routeApp.GetDashboard)
 
 	// reservation
-	route.GET("/reservations", routeApp.GetAllReservation, middleware.TokenRole("user"))
-	route.GET("/reservations/:id", routeApp.GetByID, middleware.TokenRole("user"))
-	route.PUT("/reservations/:id", routeApp.PutReservation, middleware.TokenRole("user"))
-	route.POST("/reservations", routeApp.PostReservation, middleware.TokenRole("user"))
+	route.GET("/reservations", routeApp.GetAllReservation)
+	route.GET("/reservations/:id", routeApp.GetByID)
+	route.PUT("/reservations/:id", routeApp.PutReservation)
+	route.POST("/reservations", routeApp.PostReservation)
 
 	// user
 	route.GET("/users", routeApp.GetUsers, middleware.TokenRole("user"))

@@ -16,6 +16,52 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/dashboard": {
+            "get": {
+                "description": "Get dashboard data",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "Get dashboard data",
+                "responses": {}
+            }
+        },
+        "/images": {
+            "post": {
+                "description": "Upload an image",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "images"
+                ],
+                "summary": "Upload an image",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Image file",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "Login user menggunakan email dan password, email: mail@mail.com, password: password123",
@@ -156,7 +202,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Note: Untuk Booking date menggunakan format YYYY-MM-DD",
+                "description": "Note: Untuk Booking date menggunakan format YYYY-MM-DD untuk time menggunakan format HH:MM:SS",
                 "consumes": [
                     "application/json"
                 ],
