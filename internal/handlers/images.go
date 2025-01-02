@@ -11,6 +11,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// PostImage godoc
+// @Summary Upload an image
+// @Description Upload an image
+// @Tags images
+// @Accept multipart/form-data
+// @Produce json
+// @Param image formData file true "Image file"
+// @Success 200 {object} map[string]interface{}
+// @Router /images [post]
 func PostImage(c echo.Context) error {
 	// Ambil file dari form data
 	file, err := c.FormFile("image")

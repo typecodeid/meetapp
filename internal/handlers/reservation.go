@@ -484,7 +484,7 @@ func isRoomAvailable(roomID, bookingDate, startTime, endTime string) (bool, stri
 
 // PostReservation godoc
 // @Summary Create a new reservation
-// @Description Note: Untuk Booking date menggunakan format YYYY-MM-DD
+// @Description Note: Untuk Booking date menggunakan format YYYY-MM-DD untuk time menggunakan format HH:MM:SS
 // @Tags reservations
 // @Accept json
 // @Produce json

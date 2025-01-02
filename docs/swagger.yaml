@@ -205,11 +205,43 @@ definitions:
 host: localhost:7000
 info:
   contact: {}
-  description: This is documentation API from Swagger
+  description: This is documentation API from Swagger. Jika ada masalah token silahkan
+    coba pakai postman
   termsOfService: http://swagger.io/terms/
   title: Swagger MeetApp By Sinau Koding API
   version: "1.0"
 paths:
+  /dashboard:
+    get:
+      description: Get dashboard data
+      produces:
+      - application/json
+      responses: {}
+      summary: Get dashboard data
+      tags:
+      - dashboard
+  /images:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload an image
+      parameters:
+      - description: Image file
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Upload an image
+      tags:
+      - images
   /login:
     post:
       consumes:
@@ -306,7 +338,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: 'Note: Untuk Booking date menggunakan format YYYY-MM-DD'
+      description: 'Note: Untuk Booking date menggunakan format YYYY-MM-DD untuk time
+        menggunakan format HH:MM:SS'
       parameters:
       - description: Reservation details
         in: body
