@@ -980,7 +980,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "Swagger MeetApp By Sinau Koding API",
-	Description:      "This is documentation API from Swagger",
+	Description:      "This is documentation API from Swagger. Jika ada masalah token silahkan coba pakai postman",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

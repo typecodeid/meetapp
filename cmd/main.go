@@ -16,7 +16,7 @@ import (
 
 // @title Swagger MeetApp By Sinau Koding API
 // @version 1.0
-// @description This is documentation API from Swagger
+// @description This is documentation API from Swagger. Jika ada masalah token silahkan coba pakai postman
 // @termsOfService http://swagger.io/terms/
 // @host localhost:7000
 // @BasePath /
@@ -42,13 +42,13 @@ func main() {
 	})
 
 	// Dashboard
-	route.GET("/dashboard", routeApp.GetDashboard)
+	route.GET("/dashboard", routeApp.GetDashboard, middleware.TokenRole("admin"))
 
 	// reservation
-	route.GET("/reservations", routeApp.GetAllReservation)
-	route.GET("/reservations/:id", routeApp.GetByID)
-	route.PUT("/reservations/:id", routeApp.PutReservation)
-	route.POST("/reservations", routeApp.PostReservation)
+	route.GET("/reservations", routeApp.GetAllReservation, middleware.TokenRole("user"))
+	route.GET("/reservations/:id", routeApp.GetByID, middleware.TokenRole("user"))
+	route.PUT("/reservations/:id", routeApp.PutReservation, middleware.TokenRole("user"))
+	route.POST("/reservations", routeApp.PostReservation, middleware.TokenRole("user"))
 
 	// user
 	route.GET("/users", routeApp.GetUsers, middleware.TokenRole("user"))
@@ -72,7 +72,7 @@ func main() {
 	route.POST("/register", routeApp.AuthRegister)
 
 	// images
-	route.POST("/images", routeApp.PostImage)
+	route.POST("/images", routeApp.PostImage, middleware.TokenRole("user"))
 
 	route.GET("/swagger/*", echoSwagger.WrapHandler)
 	route.Logger.Fatal(route.Start(":7000"))
