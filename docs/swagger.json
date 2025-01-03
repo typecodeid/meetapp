@@ -3,15 +3,17 @@
     "info": {
         "description": "This is documentation API from Swagger. Jika ada masalah token silahkan coba pakai postman",
         "title": "Swagger MeetApp By Sinau Koding API",
-        "termsOfService": "http://swagger.io/terms/",
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:7000",
-    "basePath": "/",
     "paths": {
         "/dashboard": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get dashboard data",
                 "produces": [
                     "application/json"
@@ -20,7 +22,14 @@
                     "dashboard"
                 ],
                 "summary": "Get dashboard data",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.DashboardResponse"
+                        }
+                    }
+                }
             }
         },
         "/images": {
@@ -354,38 +363,11 @@
                     "rooms"
                 ],
                 "summary": "Get all rooms",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer \u003ctoken\u003e",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/handlers.responseRoom"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized or invalid token",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
                         }
                     }
                 }
@@ -660,6 +642,29 @@
         }
     },
     "definitions": {
+        "handlers.DashboardResponse": {
+            "type": "object",
+            "properties": {
+                "room_stats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.RoomStats"
+                    }
+                },
+                "total_reservations": {
+                    "type": "integer"
+                },
+                "total_revenue": {
+                    "type": "integer"
+                },
+                "total_rooms": {
+                    "type": "integer"
+                },
+                "total_visitors": {
+                    "type": "integer"
+                }
+            }
+        },
         "handlers.Reservation": {
             "type": "object",
             "properties": {
@@ -786,6 +791,20 @@
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "handlers.RoomStats": {
+            "type": "object",
+            "properties": {
+                "room_name": {
+                    "type": "string"
+                },
+                "room_revenue": {
+                    "type": "integer"
+                },
+                "usage_percentage": {
+                    "type": "number"
                 }
             }
         },
@@ -963,6 +982,13 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

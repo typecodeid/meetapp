@@ -25,10 +25,7 @@ type responseRoom struct {
 // @Description Retrieve all rooms in the system. Requires a valid Bearer token.
 // @Tags rooms
 // @Produce json
-// @Param Authorization header string true "Bearer <token>"
 // @Success 200 {object} responseRoom
-// @Failure 401 {object} map[string]string "Unauthorized or invalid token"
-// @Failure 500 {object} map[string]string "Internal server error"
 // @Security BearerAuth
 // @Router /rooms [get]
 func GetRooms(c echo.Context) error {

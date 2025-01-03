@@ -17,6 +17,9 @@ import (
 // @title Swagger MeetApp By Sinau Koding API
 // @version 1.0
 // @description This is documentation API from Swagger. Jika ada masalah token silahkan coba pakai postman
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 // @termsOfService http://swagger.io/terms/
 // @host localhost:7000
 // @BasePath /
