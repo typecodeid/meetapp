@@ -1,5 +1,19 @@
-basePath: /
 definitions:
+  handlers.DashboardResponse:
+    properties:
+      room_stats:
+        items:
+          $ref: '#/definitions/handlers.RoomStats'
+        type: array
+      total_reservations:
+        type: integer
+      total_revenue:
+        type: integer
+      total_rooms:
+        type: integer
+      total_visitors:
+        type: integer
+    type: object
   handlers.Reservation:
     properties:
       booking_date:
@@ -85,6 +99,15 @@ definitions:
         type: integer
       type:
         type: string
+    type: object
+  handlers.RoomStats:
+    properties:
+      room_name:
+        type: string
+      room_revenue:
+        type: integer
+      usage_percentage:
+        type: number
     type: object
   handlers.Rooms:
     properties:
@@ -202,12 +225,10 @@ definitions:
       message:
         type: string
     type: object
-host: localhost:7000
 info:
   contact: {}
   description: This is documentation API from Swagger. Jika ada masalah token silahkan
     coba pakai postman
-  termsOfService: http://swagger.io/terms/
   title: Swagger MeetApp By Sinau Koding API
   version: "1.0"
 paths:
@@ -216,7 +237,13 @@ paths:
       description: Get dashboard data
       produces:
       - application/json
-      responses: {}
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.DashboardResponse'
+      security:
+      - BearerAuth: []
       summary: Get dashboard data
       tags:
       - dashboard
@@ -434,12 +461,6 @@ paths:
   /rooms:
     get:
       description: Retrieve all rooms in the system. Requires a valid Bearer token.
-      parameters:
-      - description: Bearer <token>
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -447,18 +468,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/handlers.responseRoom'
-        "401":
-          description: Unauthorized or invalid token
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
       security:
       - BearerAuth: []
       summary: Get all rooms
@@ -641,4 +650,9 @@ paths:
       summary: Update user by ID
       tags:
       - users
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

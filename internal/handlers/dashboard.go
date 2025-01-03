@@ -7,26 +7,29 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type RoomStats struct {
+	RoomName        string  `json:"room_name"`
+	UsagePercentage float64 `json:"usage_percentage"`
+	RoomRevenue     int     `json:"room_revenue"`
+}
+
+type DashboardResponse struct {
+	TotalRevenue      int         `json:"total_revenue"`
+	TotalReservations int         `json:"total_reservations"`
+	TotalVisitors     int         `json:"total_visitors"`
+	TotalRooms        int         `json:"total_rooms"`
+	RoomStats         []RoomStats `json:"room_stats"`
+}
+
 // Dahsboard godoc
 // @Summary Get dashboard data
 // @Description Get dashboard data
 // @Tags dashboard
 // @Produce json
+// @Security BearerAuth
+// @Success 200 {object} DashboardResponse
 // @Router /dashboard [get]
 func GetDashboard(c echo.Context) error {
-	type RoomStats struct {
-		RoomName        string  `json:"room_name"`
-		UsagePercentage float64 `json:"usage_percentage"`
-		RoomRevenue     int     `json:"room_revenue"`
-	}
-
-	type DashboardResponse struct {
-		TotalRevenue      int         `json:"total_revenue"`
-		TotalReservations int         `json:"total_reservations"`
-		TotalVisitors     int         `json:"total_visitors"`
-		TotalRooms        int         `json:"total_rooms"`
-		RoomStats         []RoomStats `json:"room_stats"`
-	}
 
 	// Query for total revenue
 	var totalRevenue int

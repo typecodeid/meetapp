@@ -9,7 +9,6 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/",
         "contact": {},
         "version": "{{.Version}}"
     },
@@ -18,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/dashboard": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get dashboard data",
                 "produces": [
                     "application/json"
@@ -26,7 +30,14 @@ const docTemplate = `{
                     "dashboard"
                 ],
                 "summary": "Get dashboard data",
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handlers.DashboardResponse"
+                        }
+                    }
+                }
             }
         },
         "/images": {
@@ -360,38 +371,11 @@ const docTemplate = `{
                     "rooms"
                 ],
                 "summary": "Get all rooms",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer \u003ctoken\u003e",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/handlers.responseRoom"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized or invalid token",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
                         }
                     }
                 }
@@ -666,6 +650,29 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "handlers.DashboardResponse": {
+            "type": "object",
+            "properties": {
+                "room_stats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/handlers.RoomStats"
+                    }
+                },
+                "total_reservations": {
+                    "type": "integer"
+                },
+                "total_revenue": {
+                    "type": "integer"
+                },
+                "total_rooms": {
+                    "type": "integer"
+                },
+                "total_visitors": {
+                    "type": "integer"
+                }
+            }
+        },
         "handlers.Reservation": {
             "type": "object",
             "properties": {
@@ -792,6 +799,20 @@ const docTemplate = `{
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "handlers.RoomStats": {
+            "type": "object",
+            "properties": {
+                "room_name": {
+                    "type": "string"
+                },
+                "room_revenue": {
+                    "type": "integer"
+                },
+                "usage_percentage": {
+                    "type": "number"
                 }
             }
         },
@@ -970,14 +991,21 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:7000",
-	BasePath:         "/",
+	Host:             "",
+	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Swagger MeetApp By Sinau Koding API",
 	Description:      "This is documentation API from Swagger. Jika ada masalah token silahkan coba pakai postman",
