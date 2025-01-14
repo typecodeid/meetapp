@@ -273,8 +273,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: 'Login user menggunakan email dan password, email: mail@mail.com,
-        password: password123'
+      description: 'Login user menggunakan email dan password, Admin: email: mail@mail.com,
+        password: password123 dan user biasa, email:mail2@mail.com password: password123
+        Setelah login silahkan masukan token dengan format: Bearer <token>'
       parameters:
       - description: User login details
         in: body

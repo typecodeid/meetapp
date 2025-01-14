@@ -43,7 +43,7 @@ var validate = validator.New()
 
 // AuthLogin godoc
 // @Summary Login user
-// @Description Login user menggunakan email dan password, email: mail@mail.com, password: password123
+// @Description Login user menggunakan email dan password, Admin: email: mail@mail.com, password: password123 dan user biasa, email:mail2@mail.com password: password123 Setelah login silahkan masukan token dengan format: Bearer <token>
 // @Tags auth
 // @Accept json
 // @Produce json
