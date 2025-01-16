@@ -68,23 +68,12 @@ func GetSnackByID(c echo.Context) error {
 			"message": "Failed to retrieve snack",
 		})
 	}
-	response := responseSnack{
+
+	dataResponse := APIResponse{
 		Message: "Success",
+		Status:  http.StatusOK,
 		Data:    []Snack{snack},
 	}
-	return c.JSON(http.StatusOK, response)
-}
 
-// CreateSnack godoc
-// @Summary Create Snack
-// @Description Create Snack
-// @Tags Snack
-// @Produce json
-// @Success 200 {object} map[string]string
-// @Security BearerAuth
-// @Router /snack [post]
-func CreateSnack(c echo.Context) error {
-	return c.JSON(http.StatusOK, map[string]string{
-		"message": "Create Snack Here",
-	})
+	return c.JSON(http.StatusOK, dataResponse)
 }

@@ -54,9 +54,9 @@ func main() {
 	route.POST("/reservations", routeApp.PostReservation, middleware.TokenRole("user"))
 
 	// user
-	route.GET("/users", routeApp.GetUsers, middleware.TokenRole("user"))
+	route.GET("/users", routeApp.GetUsers, middleware.TokenRole("admin"))
 	route.GET("/users/:id", routeApp.GetUserByID, middleware.TokenRole("user"))
-	route.PUT("/users/:id", routeApp.UpdateUserByID, middleware.TokenRole("user"))
+	route.PUT("/users/:id", routeApp.UpdateUserByID, middleware.TokenRole("admin"))
 	route.DELETE("/users/:id", routeApp.DeleteUserByID, middleware.TokenRole("admin"))
 
 	// room
@@ -68,7 +68,6 @@ func main() {
 
 	// snack
 	route.GET("/snack", routeApp.GetSnack, middleware.TokenRole("user"))
-	route.POST("/snack", routeApp.CreateSnack, middleware.TokenRole("user"))
 
 	//auth
 	route.POST("/login", routeApp.AuthLogin)

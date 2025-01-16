@@ -549,58 +549,6 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/rooms/{room_id}/price": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Retrieve the price of a room by its ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "rooms"
-                ],
-                "summary": "Get the price of a room by its ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Room ID",
-                        "name": "room_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Room price",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    "404": {
-                        "description": "Room not found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/snack": {
             "get": {
                 "security": [
@@ -624,66 +572,6 @@ const docTemplate = `{
                             "additionalProperties": {
                                 "type": "string"
                             }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Create Snack",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Snack"
-                ],
-                "summary": "Create Snack",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/snacks/{snack_id}/price": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Retrieve the price of a snack by its ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "snacks"
-                ],
-                "summary": "Get the price of a snack by its ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Snack ID",
-                        "name": "snack_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Snack price",
-                        "schema": {
-                            "type": "integer"
                         }
                     }
                 }
@@ -1135,9 +1023,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/handlers.UserResponse"
                     }
-                },
-                "message": {
-                    "type": "string"
                 }
             }
         },
