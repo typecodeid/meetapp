@@ -26,6 +26,7 @@ type responseSnack struct {
 // @Tags Snack
 // @Produce json
 // @Success 200 {object} map[string]string
+// @Security BearerAuth
 // @Router /snack [get]
 func GetSnack(c echo.Context) error {
 	query := "SELECT id, name, category, package, price FROM snacks"
@@ -80,6 +81,7 @@ func GetSnackByID(c echo.Context) error {
 // @Tags Snack
 // @Produce json
 // @Success 200 {object} map[string]string
+// @Security BearerAuth
 // @Router /snack [post]
 func CreateSnack(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{

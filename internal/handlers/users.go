@@ -18,6 +18,7 @@ type response struct {
 // @tags users
 // @produce json
 // @success 200 {object} response
+// @Security BearerAuth
 // @router /users [get]
 func GetUsers(c echo.Context) error {
 	query := "SELECT id, image_id, username, email, role, status, language FROM users"
@@ -57,6 +58,7 @@ func GetUsers(c echo.Context) error {
 // @produce json
 // @Param id path string true "Reservation ID"
 // @success 200 {object} response
+// @Security BearerAuth
 // @router /users/{id} [get]
 func GetUserByID(c echo.Context) error {
 	query := "SELECT id, image_id, username, email, role, status, language FROM users WHERE id = $1"
@@ -95,6 +97,7 @@ func GetUserByID(c echo.Context) error {
 // @produce json
 // @Param id path string true "Reservation ID"
 // @success 200 {object} response
+// @Security BearerAuth
 // @router /users/{id} [put]
 func UpdateUserByID(c echo.Context) error {
 	id := c.Param("id")
@@ -142,6 +145,7 @@ func UpdateUserByID(c echo.Context) error {
 // @produce json
 // @Param id path string true "Reservation ID"
 // @success 200 {object} response
+// @Security BearerAuth
 // @router /users/{id} [delete]
 func DeleteUserByID(c echo.Context) error {
 	id := c.Param("id")
