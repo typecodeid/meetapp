@@ -28,6 +28,7 @@ type DashboardResponse struct {
 // @Produce json
 // @Security BearerAuth
 // @Success 200 {object} DashboardResponse
+// @Security BearerAuth
 // @Router /dashboard [get]
 func GetDashboard(c echo.Context) error {
 

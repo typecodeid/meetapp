@@ -19,6 +19,7 @@ import (
 // @Produce json
 // @Param image formData file true "Image file"
 // @Success 200 {object} map[string]interface{}
+// @Security BearerAuth
 // @Router /images [post]
 func PostImage(c echo.Context) error {
 	// Ambil file dari form data

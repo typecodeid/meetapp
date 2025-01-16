@@ -20,6 +20,9 @@ const docTemplate = `{
                 "security": [
                     {
                         "BearerAuth": []
+                    },
+                    {
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Get dashboard data",
@@ -42,6 +45,11 @@ const docTemplate = `{
         },
         "/images": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Upload an image",
                 "consumes": [
                     "multipart/form-data"
@@ -163,6 +171,11 @@ const docTemplate = `{
         },
         "/reservations": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve all reservations in the system contoh: /reservations?status=cancel\u0026room_type=medium",
                 "consumes": [
                     "application/json"
@@ -213,6 +226,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Note: Untuk Booking date menggunakan format YYYY-MM-DD untuk time menggunakan format HH:MM:SS",
                 "consumes": [
                     "application/json"
@@ -250,6 +268,11 @@ const docTemplate = `{
         },
         "/reservations/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve a reservation by its ID",
                 "consumes": [
                     "application/json"
@@ -289,6 +312,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update the status of a reservation by its ID",
                 "consumes": [
                     "application/json"
@@ -381,6 +409,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a new room",
                 "consumes": [
                     "application/json"
@@ -415,6 +448,11 @@ const docTemplate = `{
         },
         "/rooms/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get a room by ID",
                 "produces": [
                     "application/json"
@@ -442,6 +480,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update a room by ID",
                 "consumes": [
                     "application/json"
@@ -481,6 +524,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete a room by ID",
                 "produces": [
                     "application/json"
@@ -501,8 +549,65 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/rooms/{room_id}/price": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve the price of a room by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get the price of a room by its ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Room ID",
+                        "name": "room_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Room price",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    "404": {
+                        "description": "Room not found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/snack": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get Snack",
                 "produces": [
                     "application/json"
@@ -524,6 +629,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create Snack",
                 "produces": [
                     "application/json"
@@ -545,8 +655,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/snacks/{snack_id}/price": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve the price of a snack by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "snacks"
+                ],
+                "summary": "Get the price of a snack by its ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Snack ID",
+                        "name": "snack_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Snack price",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get all users",
                 "produces": [
                     "application/json"
@@ -567,6 +716,11 @@ const docTemplate = `{
         },
         "/users/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get user by ID",
                 "produces": [
                     "application/json"
@@ -594,6 +748,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update user by ID",
                 "produces": [
                     "application/json"
@@ -621,6 +780,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete user by ID",
                 "produces": [
                     "application/json"

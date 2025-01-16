@@ -64,6 +64,7 @@ func GetRooms(c echo.Context) error {
 // @Produce json
 // @Param id path string true "Room ID"
 // @Success 200 {object} responseRoom
+// @Security BearerAuth
 // @Router /rooms/{id} [get]
 func GetRoomByID(c echo.Context) error {
 	id := c.Param("id")
@@ -93,6 +94,7 @@ func GetRoomByID(c echo.Context) error {
 // @Param id path string true "Room ID"
 // @Param room body Room true "Room details"
 // @Success 200 {object} responseRoom
+// @Security BearerAuth
 // @Router /rooms/{id} [put]
 func UpdateRoomByID(c echo.Context) error {
 	id := c.Param("id")
@@ -141,6 +143,7 @@ func UpdateRoomByID(c echo.Context) error {
 // @Produce json
 // @Param id path string true "Room ID"
 // Success 200 {object} map[string]string
+// @Security BearerAuth
 // @Router /rooms/{id} [delete]
 func DeleteRoomByID(c echo.Context) error {
 	id := c.Param("id")
@@ -165,6 +168,7 @@ func DeleteRoomByID(c echo.Context) error {
 // @Produce json
 // @Param room body Room true "Room details"
 // @Success 201 {object} Room
+// @Security BearerAuth
 // @Router /rooms [post]
 func CreateRoom(c echo.Context) error {
 	var input Room

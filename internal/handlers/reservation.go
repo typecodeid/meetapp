@@ -122,6 +122,7 @@ var data = []Reservation{}
 // @Param start_date query string false "Filter by start date (YYYY-MM-DD)"
 // @Param end_date query string false "Filter by end date (YYYY-MM-DD)"
 // @Success 200 {array} Reservation
+// @Security BearerAuth
 // @Router /reservations [get]
 func GetAllReservation(c echo.Context) error {
 	// Ambil query parameter
@@ -270,6 +271,7 @@ func GetAllReservation(c echo.Context) error {
 // @Param id path string true "Reservation ID"
 // @Success 200 {object} Reservation
 // @Failure 404 {object} map[string]string
+// @Security BearerAuth
 // @Router /reservations/{id} [get]
 func GetByID(c echo.Context) error {
 	id := c.Param("id")
@@ -362,6 +364,7 @@ func GetByID(c echo.Context) error {
 // @Failure 400 {object} map[string]string "Invalid request payload or missing status"
 // @Failure 404 {object} map[string]string "Reservation not found"
 // @Failure 500 {object} map[string]string "Internal server error"
+// @Security BearerAuth
 // @Router /reservations/{id} [put]
 func PutReservation(c echo.Context) error {
 	// Ambil ID dari path parameter
@@ -410,6 +413,17 @@ func PutReservation(c echo.Context) error {
 	})
 }
 
+// getRoomPriceByID
+// @Summary Get the price of a room by its ID
+// @Description Retrieve the price of a room by its ID
+// @Tags rooms
+// @Produce json
+// @Param room_id path string true "Room ID"
+// @Success 200 {object} int "Room price"
+// @Failure 404 {object} map[string]string "Room not found"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /rooms/{room_id}/price [get]
+// @Security BearerAuth
 func getRoomPriceByID(roomID string) (int, error) {
 	var roomPrice int
 	query := "SELECT price FROM rooms WHERE id = $1"
@@ -422,6 +436,15 @@ func getRoomPriceByID(roomID string) (int, error) {
 	return roomPrice, nil
 }
 
+// getSnackPriceByID
+// @Summary Get the price of a snack by its ID
+// @Description Retrieve the price of a snack by its ID
+// @Tags snacks
+// @Produce json
+// @Param snack_id path string true "Snack ID"
+// @Success 200 {object} int "Snack price"
+// @Security BearerAuth
+// @Router /snacks/{snack_id}/price [get]
 func getSnackPriceByID(snackID string) (int, error) {
 	var snackPrice int
 	query := "SELECT price FROM snacks WHERE id = $1"
@@ -490,6 +513,7 @@ func isRoomAvailable(roomID, bookingDate, startTime, endTime string) (bool, stri
 // @Produce json
 // @Param reservation body ReservationInput true "Reservation details" Example({"room_id": "6066f8a1-0a80-4299-86ca-99888912bbe5", "user_id": "21691490-6817-4bf4-9bf7-3bf624d210a7", "snack_id": "b8f8cab4-9f0e-4d08-88aa-9fd465a52536", "start_time": "10:00:00", "end_time": "12:00:00", "booking_date": "2024-12-20", "name": "Sapto", "participants": 7, "total_snack": 7, "company": "PT. Sinau Koding Inc", "phone": "0191181811"})
 // @Success 200 {object} map[string]string
+// @Security BearerAuth
 // @Router /reservations [post]
 func PostReservation(c echo.Context) error {
 	var reservation ResponseReservation
