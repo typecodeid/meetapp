@@ -7,6 +7,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type APIResponse struct {
+	Message string `json:"message"`
+	Status  int    `json:"status"`
+	id      string
+	Data    interface{} `json:"data"`
+}
+
 type RoomStats struct {
 	RoomName        string  `json:"room_name"`
 	UsagePercentage float64 `json:"usage_percentage"`
@@ -107,5 +114,11 @@ func GetDashboard(c echo.Context) error {
 		RoomStats:         roomStats,
 	}
 
-	return c.JSON(http.StatusOK, response)
+	dataResponse := APIResponse{
+		Message: "Success",
+		Status:  http.StatusOK,
+		Data:    response,
+	}
+
+	return c.JSON(http.StatusOK, dataResponse)
 }

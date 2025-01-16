@@ -256,10 +256,13 @@ func GetAllReservation(c echo.Context) error {
 		reservations = append(reservations, reservationData)
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "Success",
-		"data":    reservations,
-	})
+	dataResponse := APIResponse{
+		Message: "Success",
+		Status:  http.StatusOK,
+		Data:    reservations,
+	}
+
+	return c.JSON(http.StatusOK, dataResponse)
 }
 
 // GetByID godoc
@@ -346,10 +349,13 @@ func GetByID(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "Success",
-		"data":    reservationData,
-	})
+	dataResponse := APIResponse{
+		Message: "Success",
+		Status:  http.StatusOK,
+		Data:    reservationData,
+	}
+
+	return c.JSON(http.StatusOK, dataResponse)
 }
 
 // PutReservation godoc
@@ -403,27 +409,15 @@ func PutReservation(c echo.Context) error {
 			"error":   err.Error(),
 		})
 	}
+	dataResponse := APIResponse{
+		Message: "Reservation updated successfully",
+		Status:  http.StatusOK,
+		id:      updatedID,
+	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "Reservation updated successfully",
-		"data": map[string]string{
-			"id":     updatedID,
-			"status": updatedStatus,
-		},
-	})
+	return c.JSON(http.StatusOK, dataResponse)
 }
 
-// getRoomPriceByID
-// @Summary Get the price of a room by its ID
-// @Description Retrieve the price of a room by its ID
-// @Tags rooms
-// @Produce json
-// @Param room_id path string true "Room ID"
-// @Success 200 {object} int "Room price"
-// @Failure 404 {object} map[string]string "Room not found"
-// @Failure 500 {object} map[string]string "Internal server error"
-// @Router /rooms/{room_id}/price [get]
-// @Security BearerAuth
 func getRoomPriceByID(roomID string) (int, error) {
 	var roomPrice int
 	query := "SELECT price FROM rooms WHERE id = $1"
@@ -436,15 +430,6 @@ func getRoomPriceByID(roomID string) (int, error) {
 	return roomPrice, nil
 }
 
-// getSnackPriceByID
-// @Summary Get the price of a snack by its ID
-// @Description Retrieve the price of a snack by its ID
-// @Tags snacks
-// @Produce json
-// @Param snack_id path string true "Snack ID"
-// @Success 200 {object} int "Snack price"
-// @Security BearerAuth
-// @Router /snacks/{snack_id}/price [get]
 func getSnackPriceByID(snackID string) (int, error) {
 	var snackPrice int
 	query := "SELECT price FROM snacks WHERE id = $1"
@@ -567,9 +552,12 @@ func PostReservation(c echo.Context) error {
 	// Set ID yang dihasilkan ke dalam struct
 	reservation.ID = reservationID
 
+	dataResponse := APIResponse{
+		Message: "Reservation created successfully",
+		Status:  http.StatusCreated,
+		Data:    reservation,
+	}
+
 	// Kembalikan respons dengan data reservasi
-	return c.JSON(http.StatusCreated, map[string]interface{}{
-		"message":     "Reservation created successfully",
-		"reservation": reservation,
-	})
+	return c.JSON(http.StatusCreated, dataResponse)
 }

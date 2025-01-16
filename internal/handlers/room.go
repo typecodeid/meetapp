@@ -50,11 +50,13 @@ func GetRooms(c echo.Context) error {
 		room = append(room, roomData)
 	}
 
-	response := responseRoom{
+	dataResponse := APIResponse{
 		Message: "Success",
+		Status:  http.StatusOK,
 		Data:    room,
 	}
-	return c.JSON(http.StatusOK, response)
+
+	return c.JSON(http.StatusOK, dataResponse)
 }
 
 // GetRoomByID godoc
@@ -78,11 +80,13 @@ func GetRoomByID(c echo.Context) error {
 		})
 	}
 
-	response := responseRoom{
+	dataResponse := APIResponse{
 		Message: "Success",
+		Status:  http.StatusOK,
 		Data:    []Room{room},
 	}
-	return c.JSON(http.StatusOK, response)
+
+	return c.JSON(http.StatusOK, dataResponse)
 }
 
 // UpdateRoomByID godoc
@@ -129,11 +133,13 @@ func UpdateRoomByID(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to retrieve updated room"})
 	}
 
-	response := map[string]interface{}{
-		"message": "Room updated successfully",
-		"data":    room,
+	dataResponse := APIResponse{
+		Message: "Room updated successfully",
+		Status:  http.StatusOK,
+		Data:    room,
 	}
-	return c.JSON(http.StatusOK, response)
+
+	return c.JSON(http.StatusOK, dataResponse)
 }
 
 // DeleteRoomByID godoc
@@ -155,9 +161,12 @@ func DeleteRoomByID(c echo.Context) error {
 		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{
-		"message": "Room deleted successfully",
-	})
+	dataResponse := APIResponse{
+		Message: "Room deleted successfully",
+		Status:  http.StatusOK,
+	}
+
+	return c.JSON(http.StatusOK, dataResponse)
 }
 
 // CreateRoom godoc
@@ -197,5 +206,11 @@ func CreateRoom(c echo.Context) error {
 	}
 	input.ID = id
 
-	return c.JSON(http.StatusCreated, input)
+	dataResponse := APIResponse{
+		Message: "Success",
+		Status:  http.StatusCreated,
+		Data:    input,
+	}
+
+	return c.JSON(http.StatusCreated, dataResponse)
 }

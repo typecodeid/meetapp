@@ -213,8 +213,6 @@ definitions:
         items:
           $ref: '#/definitions/handlers.UserResponse'
         type: array
-      message:
-        type: string
     type: object
   handlers.responseRoom:
     properties:
@@ -573,39 +571,6 @@ paths:
       summary: Update a room by ID
       tags:
       - rooms
-  /rooms/{room_id}/price:
-    get:
-      description: Retrieve the price of a room by its ID
-      parameters:
-      - description: Room ID
-        in: path
-        name: room_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Room price
-          schema:
-            type: integer
-        "404":
-          description: Room not found
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      security:
-      - BearerAuth: []
-      summary: Get the price of a room by its ID
-      tags:
-      - rooms
   /snack:
     get:
       description: Get Snack
@@ -623,43 +588,6 @@ paths:
       summary: Get Snack
       tags:
       - Snack
-    post:
-      description: Create Snack
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      security:
-      - BearerAuth: []
-      summary: Create Snack
-      tags:
-      - Snack
-  /snacks/{snack_id}/price:
-    get:
-      description: Retrieve the price of a snack by its ID
-      parameters:
-      - description: Snack ID
-        in: path
-        name: snack_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Snack price
-          schema:
-            type: integer
-      security:
-      - BearerAuth: []
-      summary: Get the price of a snack by its ID
-      tags:
-      - snacks
   /users:
     get:
       description: Get all users

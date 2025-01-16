@@ -8,8 +8,7 @@ import (
 )
 
 type response struct {
-	Message string         `json:"message"`
-	Data    []UserResponse `json:"data"`
+	Data []UserResponse
 }
 
 // handler user
@@ -44,11 +43,13 @@ func GetUsers(c echo.Context) error {
 		userResponses = append(userResponses, userResponse)
 	}
 
-	response := response{
+	dataResponse := APIResponse{
 		Message: "Success",
+		Status:  http.StatusOK,
 		Data:    userResponses,
 	}
-	return c.JSON(http.StatusOK, response)
+
+	return c.JSON(http.StatusOK, dataResponse)
 }
 
 // handler user
@@ -73,11 +74,13 @@ func GetUserByID(c echo.Context) error {
 		})
 	}
 
-	response := response{
+	dataResponse := APIResponse{
 		Message: "Success",
+		Status:  http.StatusOK,
 		Data:    []UserResponse{userResponse},
 	}
-	return c.JSON(http.StatusOK, response)
+
+	return c.JSON(http.StatusOK, dataResponse)
 }
 
 // func CreateReservationForRoom(c echo.Context) error {
@@ -132,11 +135,13 @@ func UpdateUserByID(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"message": "Failed to retrieve updated room"})
 	}
 
-	response := map[string]interface{}{
-		"message": "User updated successfully",
-		"data":    user,
+	dataResponse := APIResponse{
+		Message: "Success",
+		Status:  http.StatusOK,
+		Data:    user,
 	}
-	return c.JSON(http.StatusOK, response)
+
+	return c.JSON(http.StatusOK, dataResponse)
 }
 
 // @summary Delete user by ID
